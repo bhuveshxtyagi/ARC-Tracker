@@ -41,6 +41,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Cryptographic hashing using native browser Web Crypto API
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+// Get initialized Supabase client dynamically based on user/system config
+function getSupabaseClient() {
+  const dbUrl = localStorage.getItem('supabase_url') || localStorage.getItem('health_supabase_url') || localStorage.getItem('skills_supabase_url') || DEFAULT_URL;
+  const dbKey = localStorage.getItem('supabase_key') || localStorage.getItem('health_supabase_key') || localStorage.getItem('skills_supabase_key') || DEFAULT_PUBLISHABLE_KEY;
+  if (typeof supabase !== 'undefined' && dbUrl && dbKey) {
+    try {
+      return supabase.createClient(dbUrl, dbKey);
+    } catch (e) {
+      console.warn('Failed to initialize Supabase client:', e);
+    }
+  }
+  return null;
+}
+
 // ----------------------------------------------------
 // 1. Password Protection & Authentication
 // ----------------------------------------------------
@@ -49,11 +72,61 @@ function setupAuth() {
   const passwordInput = document.getElementById('passcode-input');
   const unlockBtn = document.getElementById('unlock-btn');
   const authError = document.getElementById('auth-error');
+  const togglePasswordBtn = document.getElementById('toggle-password');
 
-  const attemptUnlock = () => {
+  const attemptUnlock = async () => {
     const entered = passwordInput.value.trim();
-    // Default passcodes: Database passcode or standard admin fallback
-    if (entered === 'doit@me2A!dreamBIG' || entered === 'admin') {
+    if (!entered) return;
+
+    // Show visual loading state on unlock button
+    const originalBtnHTML = unlockBtn.innerHTML;
+    unlockBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+    unlockBtn.disabled = true;
+
+    const enteredHash = await sha256(entered);
+    let authenticated = false;
+
+    const client = getSupabaseClient();
+    if (client) {
+      try {
+        // Query password hash from settings table in Supabase
+        const { data, error } = await client
+          .from('portal_settings')
+          .select('value')
+          .eq('key', 'portal_passcode_hash')
+          .maybeSingle();
+
+        if (!error && data && data.value) {
+          if (enteredHash === data.value) {
+            authenticated = true;
+          }
+        } else {
+          // If query returns empty or table doesn't exist, fall back to local default hashes
+          if (enteredHash === '5edb92356119e9167ba311a3439e78aee8bcf4050870eafb0d4221c42449b5ab' || 
+              enteredHash === '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918') {
+            authenticated = true;
+          }
+        }
+      } catch (e) {
+        console.warn('Supabase auth query failed, falling back to local verification:', e);
+        if (enteredHash === '5edb92356119e9167ba311a3439e78aee8bcf4050870eafb0d4221c42449b5ab' || 
+            enteredHash === '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918') {
+          authenticated = true;
+        }
+      }
+    } else {
+      // Local/Sandbox mode verification fallback
+      if (enteredHash === '5edb92356119e9167ba311a3439e78aee8bcf4050870eafb0d4221c42449b5ab' || 
+          enteredHash === '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918') {
+        authenticated = true;
+      }
+    }
+
+    // Restore button state
+    unlockBtn.innerHTML = originalBtnHTML;
+    unlockBtn.disabled = false;
+
+    if (authenticated) {
       sessionStorage.setItem('tracker_auth_session', 'true');
       authError.style.display = 'none';
       passwordInput.value = '';
@@ -66,10 +139,24 @@ function setupAuth() {
     }
   };
 
-  // Click handler
-  unlockBtn.addEventListener('click', attemptUnlock);
+  // Toggle password visibility
+  if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      const icon = togglePasswordBtn.querySelector('i');
+      if (type === 'text') {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+  }
 
-  // Keypress handler
+  // Click/Enter handlers
+  unlockBtn.addEventListener('click', attemptUnlock);
   passwordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       attemptUnlock();
@@ -122,18 +209,7 @@ function toggleTheme() {
 // 3. Consolidated Data Sync (Supabase + local storage Fallback)
 // ----------------------------------------------------
 async function loadPortalData() {
-  // 1. Get database credentials
-  const dbUrl = localStorage.getItem('supabase_url') || localStorage.getItem('health_supabase_url') || localStorage.getItem('skills_supabase_url') || DEFAULT_URL;
-  const dbKey = localStorage.getItem('supabase_key') || localStorage.getItem('health_supabase_key') || localStorage.getItem('skills_supabase_key') || DEFAULT_PUBLISHABLE_KEY;
-
-  let supabaseClient = null;
-  if (typeof supabase !== 'undefined' && dbUrl && dbKey) {
-    try {
-      supabaseClient = supabase.createClient(dbUrl, dbKey);
-    } catch (e) {
-      console.warn('Failed to initialize Supabase client:', e);
-    }
-  }
+  const supabaseClient = getSupabaseClient();
 
   // 2. Fetch Finance Data
   if (supabaseClient) {
