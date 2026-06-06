@@ -1429,6 +1429,10 @@ body.light-theme .toast {
 }
 
 @media (max-width: 768px) {
+  html {
+    font-size: 12px; /* Reduces all REM elements globally by 25% */
+  }
+
   body {
     background-image: 
       radial-gradient(circle at 50% 10%, rgba(13, 148, 136, 0.03) 0%, transparent 50%);
