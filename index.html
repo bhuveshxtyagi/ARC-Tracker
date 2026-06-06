@@ -968,6 +968,194 @@ body.light-theme #theme-icon-moon {
     font-size: 1.1rem;
   }
 }
+
+/* Biometric Security Styling */
+.auth-buttons-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-biometric-login {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-biometric-login:hover {
+  background: var(--color-primary-glow);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--color-primary-glow);
+  color: var(--text-primary);
+}
+
+.btn-biometric-login:active {
+  transform: translateY(0);
+}
+
+dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: var(--text-primary);
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), var(--shadow-premium);
+  
+  opacity: 0;
+  transform: scale(0.9) translateY(10px);
+  transition-property: opacity, transform, display, overlay;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-behavior: allow-discrete;
+}
+
+body.light-theme dialog {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.12), var(--shadow-premium);
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: 
+    display 0.3s allow-discrete,
+    overlay 0.3s allow-discrete,
+    background-color 0.3s ease-out,
+    backdrop-filter 0.3s ease-out;
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+}
+
+dialog[open]::backdrop {
+  background-color: rgba(4, 6, 10, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  @starting-style {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+}
+
+body.light-theme dialog[open]::backdrop {
+  background-color: rgba(15, 23, 42, 0.45);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.modal-header h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-primary);
+}
+
+.biometric-modal-body {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.biometric-modal-body i.status-icon {
+  font-size: 3.5rem;
+  color: var(--color-primary);
+  text-shadow: 0 0 20px var(--color-primary-glow);
+  margin-bottom: 0.5rem;
+}
+
+.biometric-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(148, 163, 184, 0.05);
+  border: 1px solid var(--border-color);
+}
+
+.biometric-status-badge.enabled {
+  background: var(--color-finance-bg);
+  border-color: var(--color-finance);
+  color: var(--color-finance);
+}
+
+.biometric-status-badge.disabled {
+  background: var(--color-health-bg);
+  border-color: var(--color-health);
+  color: var(--color-health);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.25rem;
+  width: 100%;
+}
+
   </style>
 
   <!-- FontAwesome for clean vector icons (strictly no emojis) -->
@@ -1015,10 +1203,20 @@ body.light-theme #theme-icon-moon {
         <div id="auth-error" class="auth-error">Incorrect passcode. Please try again.</div>
       </div>
 
-      <button id="unlock-btn" class="btn-unlock">
-        <span>Unlock Portal</span>
-        <i class="fa-solid fa-arrow-right"></i>
-      </button>
+      <div class="auth-buttons-wrapper">
+        <button id="unlock-btn" class="btn-unlock">
+          <span>Unlock Portal</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <button id="biometric-login-btn" type="button" class="btn-biometric-login" title="Login with fingerprint / biometric" aria-label="Biometric Login" style="display: none;">
+          <i class="fa-solid fa-fingerprint"></i>
+        </button>
+      </div>
+
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1.25rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Register Touch ID in dashboard header once unlocked.</span>
+      </div>
     </div>
   </div>
 
@@ -1046,6 +1244,10 @@ body.light-theme #theme-icon-moon {
         <button class="btn-icon" id="theme-toggle" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
           <i class="fa-solid fa-sun" id="theme-icon-sun"></i>
           <i class="fa-solid fa-moon" id="theme-icon-moon"></i>
+        </button>
+
+        <button class="btn-icon" id="btn-biometric-setup" title="Set up Biometric Login" aria-label="Biometric setup">
+          <i class="fa-solid fa-fingerprint"></i>
         </button>
 
         <button class="btn-icon" id="btn-logout" title="Lock & Logout" aria-label="Lock and Logout">
@@ -1176,6 +1378,35 @@ body.light-theme #theme-icon-moon {
 
   </div>
 
+  <!-- Biometric Setup Modal -->
+  <dialog id="biometric-dialog" closedby="any" aria-labelledby="biometric-modal-title">
+    <div class="modal-header">
+      <h2 id="biometric-modal-title">
+        <i class="fa-solid fa-fingerprint" style="color: var(--color-primary);"></i>
+        Biometric Access Setup
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <div class="biometric-modal-body">
+      <i class="fa-solid fa-shield-halved status-icon" id="biometric-icon-display"></i>
+      <div class="biometric-status-badge disabled" id="biometric-status-indicator">
+        <span class="status-dot"></span> Not Configured
+      </div>
+      <p id="biometric-instructions" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.5rem; text-align: center;">
+        Biometric login allows you to unlock this portal securely using your device's fingerprint scanner (Touch ID / Windows Hello) or facial recognition.
+      </p>
+      <div id="biometric-message" style="display: none; width: 100%; padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; text-align: center; margin-bottom: 0.5rem;"></div>
+      <div id="biometric-action-container" style="width: 100%; display: flex; flex-direction: column; gap: 0.75rem;">
+        <button class="btn-unlock" id="btn-biometric-register" style="padding: 0.75rem 1rem; font-size: 0.95rem; width: 100%;">
+          <i class="fa-solid fa-fingerprint"></i> Register Touch ID / Passkey
+        </button>
+        <button class="btn-unlock" id="btn-biometric-deregister" style="padding: 0.75rem 1rem; font-size: 0.95rem; background: var(--color-health-bg); color: var(--color-health); border: 1px solid rgba(239,68,68,0.2); box-shadow: none; display: none; width: 100%;">
+          <i class="fa-solid fa-trash-can"></i> Remove Biometric Login
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Unified JS Script -->
   <script>
 // Trackers Unified Portal - Core Logic & Summary Dashboard
@@ -1208,6 +1439,7 @@ let skillsChartInstance = null;
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   setupAuth();
+  initBiometricSetup();
   
   // Setup theme toggle listener
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
@@ -1253,6 +1485,18 @@ function setupAuth() {
   const unlockBtn = document.getElementById('unlock-btn');
   const authError = document.getElementById('auth-error');
   const togglePasswordBtn = document.getElementById('toggle-password');
+  const biometricBtn = document.getElementById('biometric-login-btn');
+
+  // Verify biometric availability on lock screen
+  if (biometricBtn) {
+    const isBiometricAvailable = window.isSecureContext && window.PublicKeyCredential && localStorage.getItem('portal_biometric_credential_id');
+    if (isBiometricAvailable) {
+      biometricBtn.style.display = 'flex';
+      biometricBtn.addEventListener('click', verifyBiometrics);
+    } else {
+      biometricBtn.style.display = 'none';
+    }
+  }
 
   const attemptUnlock = async () => {
     const entered = passwordInput.value.trim();
@@ -1358,6 +1602,254 @@ function revealDashboard() {
 function logout() {
   sessionStorage.removeItem('tracker_auth_session');
   window.location.reload();
+}
+
+// ----------------------------------------------------
+// 1b. Biometric WebAuthn Credentials (Touch ID / Face ID)
+// ----------------------------------------------------
+function initBiometricSetup() {
+  const setupBtn = document.getElementById('btn-biometric-setup');
+  const dialog = document.getElementById('biometric-dialog');
+  if (!setupBtn || !dialog) return;
+
+  const closeBtn = dialog.querySelector('.modal-close');
+  const registerBtn = document.getElementById('btn-biometric-register');
+  const deregisterBtn = document.getElementById('btn-biometric-deregister');
+
+  setupBtn.addEventListener('click', () => {
+    updateBiometricDialogUI();
+    dialog.showModal();
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      dialog.close();
+    });
+  }
+
+  // Modal dismiss on click outside
+  if (!('closedBy' in HTMLDialogElement.prototype)) {
+    dialog.addEventListener('click', (event) => {
+      if (event.target !== dialog) return;
+      const rect = dialog.getBoundingClientRect();
+      const isInside = (
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width
+      );
+      if (!isInside) dialog.close();
+    });
+  }
+
+  if (registerBtn) registerBtn.addEventListener('click', registerBiometrics);
+  if (deregisterBtn) deregisterBtn.addEventListener('click', deregisterBiometrics);
+}
+
+function updateBiometricDialogUI() {
+  const indicator = document.getElementById('biometric-status-indicator');
+  const icon = document.getElementById('biometric-icon-display');
+  const instructions = document.getElementById('biometric-instructions');
+  const registerBtn = document.getElementById('btn-biometric-register');
+  const deregisterBtn = document.getElementById('btn-biometric-deregister');
+  const messageEl = document.getElementById('biometric-message');
+
+  if (!indicator || !icon || !instructions || !registerBtn || !deregisterBtn || !messageEl) return;
+
+  // Reset message
+  messageEl.style.display = 'none';
+
+  if (!window.isSecureContext || !window.PublicKeyCredential) {
+    indicator.className = 'biometric-status-badge disabled';
+    indicator.innerHTML = '<span class="status-dot"></span> Unavailable';
+    icon.className = 'fa-solid fa-triangle-exclamation status-icon';
+    icon.style.color = 'var(--color-health)';
+    
+    instructions.innerHTML = 'Biometric authentication requires a secure context (HTTPS or localhost) and a device with biometrics enabled. If you are browsing using local <code>file://</code> protocol, please host it or run via localhost.';
+    registerBtn.disabled = true;
+    registerBtn.style.opacity = '0.5';
+    deregisterBtn.style.display = 'none';
+    return;
+  }
+
+  const isRegistered = localStorage.getItem('portal_biometric_credential_id');
+
+  if (isRegistered) {
+    indicator.className = 'biometric-status-badge enabled';
+    indicator.innerHTML = '<span class="status-dot"></span> Enabled';
+    icon.className = 'fa-solid fa-fingerprint status-icon';
+    icon.style.color = 'var(--color-finance)';
+    
+    instructions.textContent = 'Biometric authentication is successfully configured on this device. You can log in using your device scanner next time.';
+    registerBtn.style.display = 'none';
+    deregisterBtn.style.display = 'flex';
+  } else {
+    indicator.className = 'biometric-status-badge disabled';
+    indicator.innerHTML = '<span class="status-dot"></span> Not Configured';
+    icon.className = 'fa-solid fa-shield-halved status-icon';
+    icon.style.color = 'var(--text-muted)';
+    
+    instructions.textContent = 'Biometric login is not configured on this device yet. Click register to pair your device\'s Touch ID / Passkey fingerprint scanner.';
+    registerBtn.style.display = 'flex';
+    registerBtn.disabled = false;
+    registerBtn.style.opacity = '1';
+    deregisterBtn.style.display = 'none';
+  }
+}
+
+function showBiometricMessage(msg, type) {
+  const messageEl = document.getElementById('biometric-message');
+  if (!messageEl) return;
+  messageEl.textContent = msg;
+  messageEl.style.display = 'block';
+  if (type === 'success') {
+    messageEl.style.background = 'var(--color-finance-bg)';
+    messageEl.style.color = 'var(--color-finance)';
+    messageEl.style.border = '1px solid rgba(16,185,129,0.2)';
+  } else {
+    messageEl.style.background = 'var(--color-health-bg)';
+    messageEl.style.color = 'var(--color-health)';
+    messageEl.style.border = '1px solid rgba(239,68,68,0.2)';
+  }
+}
+
+async function registerBiometrics() {
+  const messageEl = document.getElementById('biometric-message');
+  if (!messageEl) return;
+  messageEl.style.display = 'none';
+
+  if (!window.isSecureContext) {
+    showBiometricMessage('Biometrics require a secure context (HTTPS or localhost).', 'error');
+    return;
+  }
+
+  if (!window.PublicKeyCredential) {
+    showBiometricMessage('Biometric credentials are not supported on this device/browser.', 'error');
+    return;
+  }
+
+  const registerBtn = document.getElementById('btn-biometric-register');
+  const originalHTML = registerBtn.innerHTML;
+  registerBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Registering...';
+  registerBtn.disabled = true;
+
+  try {
+    const challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+
+    const rpId = window.location.hostname || "localhost";
+    
+    const createOptions = {
+      challenge: challenge,
+      rp: {
+        name: "ARC Tracker Portal",
+        id: rpId
+      },
+      user: {
+        id: new Uint8Array([1, 2, 3, 4]),
+        name: "bhuveshxtyagi",
+        displayName: "Bhuvesh Tyagi"
+      },
+      pubKeyCredParams: [
+        { type: "public-key", alg: -7 },   // ES256
+        { type: "public-key", alg: -257 } // RS256
+      ],
+      authenticatorSelection: {
+        authenticatorAttachment: "platform", // Touch ID / Face ID
+        userVerification: "required"
+      },
+      timeout: 60000
+    };
+
+    const credential = await navigator.credentials.create({ publicKey: createOptions });
+    if (credential) {
+      const rawId = new Uint8Array(credential.rawId);
+      const idHex = Array.from(rawId).map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      localStorage.setItem('portal_biometric_credential_id', idHex);
+      localStorage.setItem('portal_biometric_registered', 'true');
+      
+      showBiometricMessage('Biometric login registered successfully!', 'success');
+      updateBiometricDialogUI();
+      
+      // Update lock screen button visibility
+      const lockScreenBtn = document.getElementById('biometric-login-btn');
+      if (lockScreenBtn) lockScreenBtn.style.display = 'flex';
+    }
+  } catch (err) {
+    console.error('Biometric registration error:', err);
+    showBiometricMessage('Failed to register: ' + err.message, 'error');
+  } finally {
+    registerBtn.innerHTML = originalHTML;
+    registerBtn.disabled = false;
+  }
+}
+
+async function verifyBiometrics() {
+  const authError = document.getElementById('auth-error');
+  if (authError) authError.style.display = 'none';
+
+  const storedId = localStorage.getItem('portal_biometric_credential_id');
+  if (!storedId) {
+    if (authError) {
+      authError.textContent = 'No biometrics registered on this device.';
+      authError.style.display = 'block';
+    }
+    return;
+  }
+
+  const loginBtn = document.getElementById('biometric-login-btn');
+  const originalHTML = loginBtn.innerHTML;
+  loginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+  loginBtn.disabled = true;
+
+  try {
+    const rawId = new Uint8Array(storedId.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+    const challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+
+    const rpId = window.location.hostname || "localhost";
+
+    const getOptions = {
+      challenge: challenge,
+      rpId: rpId,
+      allowCredentials: [{
+        type: "public-key",
+        id: rawId
+      }],
+      userVerification: "required",
+      timeout: 60000
+    };
+
+    const assertion = await navigator.credentials.get({ publicKey: getOptions });
+    if (assertion) {
+      sessionStorage.setItem('tracker_auth_session', 'true');
+      revealDashboard();
+    }
+  } catch (err) {
+    console.error('Biometric assertion error:', err);
+    if (authError) {
+      authError.textContent = 'Biometric verification failed: ' + err.message;
+      authError.style.display = 'block';
+    }
+    
+    loginBtn.classList.add('shake');
+    setTimeout(() => loginBtn.classList.remove('shake'), 400);
+  } finally {
+    loginBtn.innerHTML = originalHTML;
+    loginBtn.disabled = false;
+  }
+}
+
+function deregisterBiometrics() {
+  localStorage.removeItem('portal_biometric_credential_id');
+  localStorage.removeItem('portal_biometric_registered');
+  showBiometricMessage('Biometric credential removed successfully.', 'success');
+  updateBiometricDialogUI();
+  
+  // Hide lock screen button
+  const lockScreenBtn = document.getElementById('biometric-login-btn');
+  if (lockScreenBtn) lockScreenBtn.style.display = 'none';
 }
 
 // ----------------------------------------------------
