@@ -34,7 +34,10 @@
         <label for="passcode-input">Passcode</label>
         <div class="password-input-wrapper">
           <i class="fa-solid fa-lock"></i>
-          <input type="password" id="passcode-input" class="input-field" placeholder="••••••••••••" autocomplete="current-password" autofocus>
+          <input type="password" id="passcode-input" class="input-field" placeholder="••••••••••••" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" autofocus>
+          <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Toggle password visibility">
+            <i class="fa-solid fa-eye"></i>
+          </button>
         </div>
         <div id="auth-error" class="auth-error">Incorrect passcode. Please try again.</div>
       </div>
