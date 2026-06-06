@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    if (sessionStorage.getItem('tracker_auth_session') !== 'true') {
+      window.location.replace('../index.html');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="LevelUp - A premium responsive skills progress and practice tracker with visual milestones, hours allocation, and database sync.">
+  <title>LevelUp Dashboard - Premium Skills Progress Tracker</title>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="skills.css">
+
+  <!-- FontAwesome for vector icons (strictly no emojis) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- External JS Assets (Chart.js & Supabase Client) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="dark-theme">
+
+  <div class="app-container">
+
+    <!-- Global Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-name">
+          <h1>LevelUp</h1>
+          <p>Real-time Skills Progress & XP Tracker</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Database Sync Indicator -->
+        <div class="sync-status" id="sync-indicator">
+          <span class="status-dot disconnected" id="status-dot"></span>
+          <span id="sync-text">Sandbox Mode</span>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="btn btn-icon-only" id="theme-toggle" aria-label="Toggle Light/Dark Theme"
+          title="Toggle color theme">
+          <i class="fa-solid fa-sun" id="theme-icon-sun" style="display: none;"></i>
+          <i class="fa-solid fa-moon" id="theme-icon-moon"></i>
+        </button>
+
+        <!-- Connection Settings -->
+        <button class="btn btn-icon-only" onclick="openSetupModal()" id="btn-settings" aria-label="Connection Settings"
+          title="Configure Database Connection">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+        <!-- Add Milestone -->
+        <button class="btn btn-secondary" onclick="openAddMilestoneModal()" id="btn-add-milestone"
+          title="Create a new skill target milestone">
+          <i class="fa-solid fa-flag"></i> Add Milestone
+        </button>
+
+        <!-- Log Practice Session -->
+        <button class="btn btn-primary" onclick="openLogPracticeModal()" id="btn-add-log">
+          <i class="fa-solid fa-plus"></i> Log Practice Session
+        </button>
+      </div>
+    </header>
+
+    <!-- Skills Level KPI Cards Grid -->
+    <section class="summary-grid" id="skills-kpi-grid" aria-label="Skills Levels KPI Indicators">
+      
+      <!-- Chess Card -->
+      <div class="glass-card summary-card chess" id="kpi-card-Chess">
+        <div class="card-header-flex">
+          <span class="card-title">Chess</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-chess-knight"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-level-Chess">Lvl 1</div>
+        <div class="card-meta" id="kpi-hours-Chess">0.0 / 20 hrs</div>
+        <div class="budget-bar-bg" style="margin-top: 0.75rem; height: 4px;">
+          <div class="budget-bar-fill" id="kpi-bar-Chess" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Coding Card -->
+      <div class="glass-card summary-card coding" id="kpi-card-Coding">
+        <div class="card-header-flex">
+          <span class="card-title">Coding</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-code"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-level-Coding">Lvl 1</div>
+        <div class="card-meta" id="kpi-hours-Coding">0.0 / 20 hrs</div>
+        <div class="budget-bar-bg" style="margin-top: 0.75rem; height: 4px;">
+          <div class="budget-bar-fill" id="kpi-bar-Coding" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Communication Card -->
+      <div class="glass-card summary-card communication" id="kpi-card-Communication">
+        <div class="card-header-flex">
+          <span class="card-title">Communication</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-comments"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-level-Communication">Lvl 1</div>
+        <div class="card-meta" id="kpi-hours-Communication">0.0 / 20 hrs</div>
+        <div class="budget-bar-bg" style="margin-top: 0.75rem; height: 4px;">
+          <div class="budget-bar-fill" id="kpi-bar-Communication" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Reading Card -->
+      <div class="glass-card summary-card reading" id="kpi-card-Reading">
+        <div class="card-header-flex">
+          <span class="card-title">Reading</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-book-open"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-level-Reading">Lvl 1</div>
+        <div class="card-meta" id="kpi-hours-Reading">0.0 / 20 hrs</div>
+        <div class="budget-bar-bg" style="margin-top: 0.75rem; height: 4px;">
+          <div class="budget-bar-fill" id="kpi-bar-Reading" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Video Editing Card -->
+      <div class="glass-card summary-card video" id="kpi-card-Video_Editing">
+        <div class="card-header-flex">
+          <span class="card-title">Video Edit</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-video"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-level-Video_Editing">Lvl 1</div>
+        <div class="card-meta" id="kpi-hours-Video_Editing">0.0 / 20 hrs</div>
+        <div class="budget-bar-bg" style="margin-top: 0.75rem; height: 4px;">
+          <div class="budget-bar-fill" id="kpi-bar-Video_Editing" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Singing Card -->
+      <div class="glass-card summary-card singing" id="kpi-card-Singing">
+        <div class="card-header-flex">
+          <span class="card-title">Singing</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-music"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-level-Singing">Lvl 1</div>
+        <div class="card-meta" id="kpi-hours-Singing">0.0 / 20 hrs</div>
+        <div class="budget-bar-bg" style="margin-top: 0.75rem; height: 4px;">
+          <div class="budget-bar-fill" id="kpi-bar-Singing" style="width: 0%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Charts Grid Layout -->
+    <div class="assets-grid-layout">
+      <!-- Skills Allocation Doughnut Chart -->
+      <section class="glass-card chart-card" aria-label="Skills Allocation Breakdown Chart">
+        <h3>
+          <i class="fa-solid fa-chart-pie"></i> Practice Hours Allocation
+        </h3>
+        <div class="chart-container">
+          <canvas id="skillsAllocationChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Active Milestones List -->
+      <section class="glass-card chart-card" aria-label="Active Milestones Targets">
+        <div class="budget-header">
+          <h3>
+            <i class="fa-solid fa-flag"></i> Target Milestones
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="openAddMilestoneModal()"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-plus"></i> Set Target
+          </button>
+        </div>
+        <div class="assets-list-wrapper" id="milestones-list">
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px;"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Trends Visualization Charts -->
+    <div class="charts-grid">
+      <!-- Weekly Hours Trend (6 Days) -->
+      <section class="glass-card chart-card" aria-label="Weekly Learning Time Trends">
+        <h3>
+          <i class="fa-solid fa-chart-column"></i> Weekly Study Trends (Last 6 Days)
+        </h3>
+        <div class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Skill XP Progress Over Time -->
+      <section class="glass-card chart-card" aria-label="Cumulative Practice Hours Progress">
+        <h3>
+          <i class="fa-solid fa-chart-line"></i> Cumulative Learning Progress
+        </h3>
+        <div class="chart-container">
+          <canvas id="growthChart"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Details and Analytics Lists -->
+    <div class="details-row-grid">
+      <!-- Skills Target Settings Progress list -->
+      <section class="glass-card budget-card" aria-label="Skills Progress Details">
+        <div class="budget-header">
+          <h3>
+            <i class="fa-solid fa-sliders"></i> Skill Milestone Goals
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="openSkillsConfigModal()"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-pen"></i> Adjust Targets
+          </button>
+        </div>
+        <div class="budget-list" id="skills-progress-list">
+          <div class="shimmer-loader" style="height: 40px; border-radius: 6px; margin-bottom: 10px;"></div>
+          <div class="shimmer-loader" style="height: 40px; border-radius: 6px;"></div>
+        </div>
+      </section>
+
+      <!-- Learning Intelligence Insights -->
+      <section class="glass-card analytics-card" aria-label="Learning Intelligence Insights">
+        <h3>
+          <i class="fa-solid fa-brain"></i> Learning Intelligence
+        </h3>
+        <div class="analytics-content" id="skills-intel-container">
+          <div>
+            <div class="analytics-section-title">Highest Practice Session</div>
+            <div class="top-spent-list" id="top-practice-list">
+              <div class="shimmer-loader" style="height: 20px; border-radius: 4px; margin-bottom: 8px; width: 85%;"></div>
+              <div class="shimmer-loader" style="height: 20px; border-radius: 4px; width: 65%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="analytics-section-title">Dominant Learning Category (Current Month)</div>
+            <div id="dominant-skill-container">
+              <div class="shimmer-loader" style="height: 60px; border-radius: 6px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Practice Logs Table Ledger Card -->
+    <section class="glass-card transactions-card" aria-label="Practice Sessions Ledger">
+      <div class="table-header">
+        <h3>Practice Logs Ledger</h3>
+
+        <!-- Filters group -->
+        <div class="filters-group">
+          <!-- Search input -->
+          <div class="search-wrapper">
+            <span class="search-icon" aria-hidden="true">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="search" id="search-input" class="search-input" placeholder="Search activity/notes...">
+          </div>
+
+          <!-- Filter by Skill -->
+          <select id="filter-skill" class="select-filter" aria-label="Filter Skill Logs">
+            <option value="all">All Skills</option>
+            <option value="Chess">Chess</option>
+            <option value="Coding">Coding</option>
+            <option value="Communication">Communication</option>
+            <option value="Reading">Reading</option>
+            <option value="Video Editing">Video Editing</option>
+            <option value="Singing">Singing</option>
+          </select>
+
+          <!-- Sort Logs -->
+          <select id="filter-sort" class="select-filter" aria-label="Sort Learning Logs">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="longest">Longest Duration</option>
+            <option value="shortest">Shortest Duration</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Scroll wrapper -->
+      <div class="table-wrapper">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 15%">Date</th>
+              <th scope="col" style="width: 20%">Skill</th>
+              <th scope="col" style="width: 15%">Duration (hrs)</th>
+              <th scope="col" style="width: 40%">Activity / Session Notes</th>
+              <th scope="col" style="width: 10%; text-align: right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="logs-body">
+            <tr>
+              <td colspan="5">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem;">
+                  <div class="shimmer-loader" style="height: 25px; border-radius: 4px; width: 100%;"></div>
+                  <div class="shimmer-loader" style="height: 25px; border-radius: 4px; width: 95%;"></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="pagination-container">
+        <div id="page-info">Showing 0–0 of 0 logs</div>
+        <div class="pagination-controls">
+          <button class="btn btn-secondary pagination-btn" id="prev-btn" disabled>Prev</button>
+          <button class="btn btn-secondary pagination-btn" id="next-btn" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL DIALOG OVERLAYS                                     -->
+  <!-- ======================================================== -->
+
+  <!-- Onboarding Wizard Dialog -->
+  <dialog id="onboarding-dialog" aria-labelledby="onboarding-modal-title" style="max-width: 600px;">
+    <div class="modal-header">
+      <h2 id="onboarding-modal-title">
+        <i class="fa-solid fa-route" style="color: var(--color-primary);"></i>
+        LevelUp Onboarding Setup
+      </h2>
+    </div>
+
+    <div class="onboarding-wizard">
+      <!-- Onboarding step indicators -->
+      <div class="onboarding-steps-indicator">
+        <div class="onboarding-step-dot active" id="dot-step-1">1</div>
+        <div class="onboarding-step-dot" id="dot-step-2">2</div>
+        <div class="onboarding-step-dot" id="dot-step-3">3</div>
+      </div>
+
+      <!-- STEP 1: Database Setup -->
+      <div class="onboarding-step-content active" id="onboard-step-1-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-database"></i>
+          <h3>Database Sync Integration</h3>
+          <p>Sync your skills progress and practice hours securely in real-time. Or skip to run locally in browser sandbox.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-url">Supabase Project URL</label>
+          <input type="url" id="onboard-url" class="form-control" placeholder="https://your-project-ref.supabase.co" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="onboard-key">Supabase Publishable Key</label>
+          <input type="text" id="onboard-key" class="form-control" placeholder="sb_publishable_..." autocomplete="off">
+          <span class="form-helper">The client uses Row Level Security (RLS) policies for secure operations.</span>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="skipOnboardingDatabase()">Skip & Run Locally</button>
+          <button type="button" class="btn btn-primary" onclick="nextOnboardingStep(2)">Connect & Next <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Initial Practice Hours -->
+      <div class="onboarding-step-content" id="onboard-step-2-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-clock"></i>
+          <h3>Pre-existing Practice Hours</h3>
+          <p>Enter any hours you have already invested in these skills to set your starting levels.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-chess"><i class="fa-solid fa-chess-knight" style="color: #f59e0b;"></i> Chess (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-chess" class="form-control" placeholder="0.0">
+          </div>
+          <div class="form-group">
+            <label for="onboard-coding"><i class="fa-solid fa-code" style="color: #6366f1;"></i> Coding (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-coding" class="form-control" placeholder="0.0">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-communication"><i class="fa-solid fa-comments" style="color: #10b981;"></i> Communication (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-communication" class="form-control" placeholder="0.0">
+          </div>
+          <div class="form-group">
+            <label for="onboard-reading"><i class="fa-solid fa-book-open" style="color: #8b5cf6;"></i> Reading (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-reading" class="form-control" placeholder="0.0">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-video"><i class="fa-solid fa-video" style="color: #f43f5e;"></i> Video Editing (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-video" class="form-control" placeholder="0.0">
+          </div>
+          <div class="form-group">
+            <label for="onboard-singing"><i class="fa-solid fa-music" style="color: #06b6d4;"></i> Singing (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-singing" class="form-control" placeholder="0.0">
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="nextOnboardingStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextOnboardingStep(3)">Next <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Setup First Milestone -->
+      <div class="onboarding-step-content" id="onboard-step-3-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-flag"></i>
+          <h3>Set a Learning Milestone</h3>
+          <p>Establish a target learning target for one of your skills to begin tracking.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-ms-skill">Select Skill</label>
+          <select id="onboard-ms-skill" class="form-control">
+            <option value="Coding">Coding</option>
+            <option value="Chess">Chess</option>
+            <option value="Communication">Communication</option>
+            <option value="Reading">Reading</option>
+            <option value="Video Editing">Video Editing</option>
+            <option value="Singing">Singing</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-ms-text">Milestone Goal Description</label>
+          <input type="text" id="onboard-ms-text" class="form-control" placeholder="e.g. Build a full-stack website dashboard">
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-ms-date">Target Achievement Date</label>
+          <input type="date" id="onboard-ms-date" class="form-control">
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="nextOnboardingStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button type="button" class="btn btn-primary" onclick="submitOnboarding()">Finish Setup <i class="fa-solid fa-check"></i></button>
+        </div>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- Log Practice Session Modal -->
+  <dialog id="log-dialog" closedby="any" aria-labelledby="log-modal-title">
+    <div class="modal-header">
+      <h2 id="log-modal-title">
+        <i class="fa-solid fa-calendar-day" style="color: var(--color-primary);"></i>
+        <span id="log-dialog-title-text">Log Practice Session</span>
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="log-form" method="dialog">
+      <input type="hidden" id="log-id" name="id">
+
+      <!-- Select Skill -->
+      <div class="form-group">
+        <label for="l-skill">Select Skill</label>
+        <select id="l-skill" name="skill_name" class="form-control" required>
+          <option value="Chess">Chess</option>
+          <option value="Coding">Coding</option>
+          <option value="Communication">Communication</option>
+          <option value="Reading">Reading</option>
+          <option value="Video Editing">Video Editing</option>
+          <option value="Singing">Singing</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <!-- Date -->
+        <div class="form-group">
+          <label for="l-date">Date</label>
+          <input type="date" id="l-date" name="date" class="form-control" required>
+        </div>
+        <!-- Duration -->
+        <div class="form-group">
+          <label for="l-duration">Duration (hours)</label>
+          <input type="number" step="0.25" min="0.1" id="l-duration" name="duration" class="form-control" placeholder="e.g. 1.5" required>
+        </div>
+      </div>
+
+      <!-- Activity description -->
+      <div class="form-group">
+        <label for="l-activity">Practice Activity Description</label>
+        <input type="text" id="l-activity" name="activity" class="form-control" placeholder="e.g. Practiced endgame pawn structures, built a web app feature" required autocomplete="off">
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label for="l-notes">Notes / Reflections</label>
+        <textarea id="l-notes" name="notes" class="form-control" rows="2" placeholder="e.g. Solved 10 tactical chess puzzles. Focused on focus and speed." style="resize: vertical;"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('log-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Session</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Add Milestone Modal -->
+  <dialog id="milestone-dialog" closedby="any" aria-labelledby="milestone-modal-title">
+    <div class="modal-header">
+      <h2 id="milestone-modal-title">
+        <i class="fa-solid fa-flag" style="color: var(--color-primary);"></i>
+        Add Skill Milestone Target
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="milestone-form" method="dialog">
+      <input type="hidden" id="ms-id" name="id">
+
+      <!-- Select Skill -->
+      <div class="form-group">
+        <label for="m-skill">Select Skill</label>
+        <select id="m-skill" name="skill_name" class="form-control" required>
+          <option value="Chess">Chess</option>
+          <option value="Coding">Coding</option>
+          <option value="Communication">Communication</option>
+          <option value="Reading">Reading</option>
+          <option value="Video Editing">Video Editing</option>
+          <option value="Singing">Singing</option>
+        </select>
+      </div>
+
+      <!-- Milestone description -->
+      <div class="form-group">
+        <label for="m-text">Milestone Goal Description</label>
+        <input type="text" id="m-text" name="milestone_text" class="form-control" placeholder="e.g. Reach 1500 ELO on Chess.com" required autocomplete="off">
+      </div>
+
+      <!-- Target Date -->
+      <div class="form-group">
+        <label for="m-date">Target Achievement Date</label>
+        <input type="date" id="m-date" name="target_date" class="form-control">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('milestone-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Target</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Skills Configuration Modal (Adjust Hour Goals) -->
+  <dialog id="skills-config-dialog" closedby="any" aria-labelledby="skills-config-dialog-title">
+    <div class="modal-header">
+      <h2 id="skills-config-dialog-title">
+        <i class="fa-solid fa-sliders" style="color: var(--color-primary);"></i>
+        Adjust Skills Target Levels
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="skills-config-form" method="dialog">
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Modify the hour goals required to level up each skill. Target hours must be greater than 0.
+      </p>
+
+      <div id="skills-config-inputs-container">
+        <!-- Dynamically built in skills.js -->
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('skills-config-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Hour Goals</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Database Connection Sync Settings Modal -->
+  <dialog id="setup-dialog" closedby="any" aria-labelledby="setup-modal-title">
+    <div class="modal-header">
+      <h2 id="setup-modal-title">
+        <i class="fa-solid fa-server" style="color: var(--color-primary);"></i>
+        Database Sync Configuration
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="setup-form" method="dialog">
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Edit your Supabase configuration below. Leave the URL blank to use a local sandbox database instead.
+      </div>
+
+      <div class="form-group">
+        <label for="setup-url">Supabase Project URL</label>
+        <input type="url" id="setup-url" class="form-control" placeholder="https://your-project-ref.supabase.co" autocomplete="off">
+        <span class="form-helper">Found in Supabase dashboard under <b>Project Settings > API</b>.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="setup-key">Supabase Publishable Key</label>
+        <input type="text" id="setup-key" class="form-control" placeholder="sb_publishable_..." autocomplete="off">
+        <span class="form-helper">Requires Anon / Publishable key to run securely client-side.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('setup-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Connect & Sync</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Toast Alerts Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Core Javascript Application Script -->
+  <script src="skills.js"></script>
+</body>
+
+</html>
