@@ -23,12 +23,26 @@
 
   <!-- 1. Lock Screen Authenticator Gate -->
   <div id="lock-screen">
+    <!-- Glowing background design blobs -->
+    <div class="blob blob-1" aria-hidden="true"></div>
+    <div class="blob blob-2" aria-hidden="true"></div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
     <div class="lock-card glass-card">
-      <div class="lock-logo" aria-hidden="true">
-        <i class="fa-solid fa-shield-halved"></i>
+      <div class="security-badge">
+        <span class="secure-dot"></span> SECURE VAULT
       </div>
+
+      <div class="lock-badge-wrapper">
+        <div class="lock-ring ring-outer"></div>
+        <div class="lock-ring ring-inner"></div>
+        <div class="lock-icon-core">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+      </div>
+
       <h2>Secure Personal Portal</h2>
-      <p>Enter your passcode to unlock your trackers</p>
+      <p>Enter your vault passcode to gain access</p>
 
       <div class="form-group">
         <label for="passcode-input">Passcode</label>
@@ -43,7 +57,8 @@
       </div>
 
       <button id="unlock-btn" class="btn-unlock">
-        <i class="fa-solid fa-key"></i> Unlock Dashboard
+        <span>Unlock Portal</span>
+        <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
   </div>
