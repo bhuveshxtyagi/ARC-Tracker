@@ -14,7 +14,1553 @@
   <title>LevelUp Dashboard - Premium Skills Progress Tracker</title>
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="skills.css">
+  <style>
+/* LevelUp Skills Tracker - Premium CSS Design System */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Default Dark Theme Variables */
+  --bg-dark: #09090e;
+  --bg-card: rgba(18, 16, 28, 0.65);
+  --bg-card-hover: rgba(18, 16, 28, 0.85);
+  --bg-input: rgba(30, 27, 46, 0.5);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color-hover: rgba(255, 255, 255, 0.12);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Skills Accent Colors (Indigo/Violet Theme) */
+  --color-primary: #6366f1; /* Indigo */
+  --color-primary-hover: #4f46e5;
+  --color-primary-glow: rgba(99, 102, 241, 0.18);
+  
+  --color-secondary: #8b5cf6; /* Violet */
+  --color-secondary-hover: #7c3aed;
+  --color-secondary-glow: rgba(139, 92, 246, 0.18);
+
+  --color-income: #10b981; /* Success Green (XP Level Up) */
+  --color-income-bg: rgba(16, 185, 129, 0.1);
+  --color-income-glow: rgba(16, 185, 129, 0.15);
+  
+  --color-expense: #ef4444; /* Alert Red */
+  --color-expense-bg: rgba(239, 68, 68, 0.1);
+  --color-expense-glow: rgba(239, 68, 68, 0.15);
+
+  --color-warning: #f59e0b; /* Amber */
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-out;
+  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 1px 1px 0 rgba(255, 255, 255, 0.03) inset;
+  --blur-glass: 18px;
+
+  --theme-transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Light Theme Variables overrides */
+body.light-theme {
+  --bg-dark: #f0f2f5;
+  --bg-card: rgba(255, 255, 255, 0.75);
+  --bg-card-hover: rgba(255, 255, 255, 0.9);
+  --bg-input: #ffffff;
+  --border-color: rgba(99, 102, 241, 0.08);
+  --border-color-hover: rgba(99, 102, 241, 0.18);
+  --text-primary: #1e1b4b;
+  --text-secondary: #4f46e5;
+  --text-muted: #8b5cf6;
+  
+  --color-primary-glow: rgba(99, 102, 241, 0.08);
+  --color-secondary-glow: rgba(139, 92, 246, 0.08);
+  --color-income-glow: rgba(16, 185, 129, 0.08);
+  --color-expense-glow: rgba(239, 68, 68, 0.08);
+  --shadow-premium: 0 10px 30px -10px rgba(99, 102, 241, 0.06), 0 1px 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  line-height: 1.5;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 45%);
+  background-attachment: fixed;
+  transition: var(--theme-transition);
+}
+
+body.light-theme {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.02) 0%, transparent 45%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.15);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+/* Dynamic CSS Transitions for Theme Switching */
+.glass-card, .btn, .form-control, .select-filter, table, th, td, h1, h2, h3, p, span, label {
+  transition: var(--theme-transition);
+}
+
+/* Glassmorphism Card Utility */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-premium);
+}
+
+.glass-card:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+}
+
+/* Container */
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Global Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  color: #ffffff;
+  font-size: 1.25rem;
+}
+
+.brand-name h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-name p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Sync Status Indicator */
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(99, 102, 241, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  display: inline-block;
+}
+
+.status-dot.connected {
+  background-color: var(--color-income);
+  box-shadow: 0 0 8px var(--color-income);
+  animation: pulse-dot 2s infinite;
+}
+
+.status-dot.error {
+  background-color: var(--color-expense);
+  box-shadow: 0 0 8px var(--color-expense);
+}
+
+.status-dot.syncing {
+  background-color: var(--color-warning);
+  box-shadow: 0 0 8px var(--color-warning);
+  animation: pulse-dot 1s infinite;
+}
+
+/* Action Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-icon-only {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-icon-only:hover {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 14px var(--color-primary-glow);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--color-primary-glow);
+}
+
+.btn-secondary {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: var(--border-color-hover);
+}
+
+.btn-danger {
+  background: var(--color-expense-bg);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--color-expense);
+}
+
+.btn-danger:hover {
+  background: var(--color-expense);
+  color: #ffffff;
+}
+
+/* FontAwesome icons general formatting alignment */
+.btn i, .sync-status i, .modal-header h2 i {
+  margin-right: 0.25rem;
+}
+
+.card-icon i {
+  font-size: 1.35rem;
+}
+
+.badge-category i {
+  margin-right: 0.35rem;
+  font-size: 0.85rem;
+}
+
+/* Dashboard Summary Cards Grid (6 Skills Grid) */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  padding: 1.25rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+}
+
+/* Customized Skill Colors */
+.summary-card.chess .card-icon { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.summary-card.coding .card-icon { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+.summary-card.communication .card-icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.summary-card.reading .card-icon { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.summary-card.video .card-icon { background: rgba(244, 63, 94, 0.1); color: #f43f5e; }
+.summary-card.singing .card-icon { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
+
+.card-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.75px;
+  line-height: 1.2;
+}
+
+.card-meta {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.card-meta span {
+  font-weight: 600;
+}
+
+.card-meta .meta-positive {
+  color: var(--color-income);
+}
+
+.card-meta .meta-negative {
+  color: var(--color-expense);
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+}
+
+.chart-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-container {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Assets & Net Worth Grid */
+.assets-grid-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Budget & Details Row */
+.details-row-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Goals/Milestones Card */
+.budget-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+}
+
+.budget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.budget-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.budget-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.budget-item-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.budget-category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.budget-amount {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.budget-amount span {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.budget-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  width: 0%;
+  background: var(--color-primary);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budget-bar-fill.normal {
+  background: var(--color-primary);
+}
+
+.budget-bar-fill.warning {
+  background: var(--color-warning);
+}
+
+.budget-bar-fill.danger {
+  background: var(--color-expense);
+  animation: pulse-danger-bar 2s infinite;
+}
+
+/* Empty placeholders */
+.budget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 0.75rem;
+}
+
+.budget-empty i {
+  font-size: 2.25rem;
+  color: var(--text-muted);
+}
+
+/* Expense Analytics styling */
+.analytics-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+}
+
+.analytics-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analytics-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.analytics-section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.top-spent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.top-spent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-spent-cat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.top-spent-bar-wrapper {
+  flex-grow: 1;
+  margin: 0 1rem;
+  background: rgba(139, 92, 246, 0.08);
+  height: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.top-spent-bar-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.8s ease-out;
+}
+
+.top-spent-val {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.top-spent-val span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Peak vital display */
+.peak-transaction-box {
+  background: rgba(139, 92, 246, 0.03);
+  border: 1px dashed var(--border-color);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.peak-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.peak-icon-wrapper i {
+  font-size: 1.1rem;
+}
+
+.peak-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex-grow: 1;
+}
+
+.peak-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.peak-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.peak-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: right;
+}
+
+/* Asset Allocation List styling */
+.assets-list-wrapper {
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.asset-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.75rem;
+  background: rgba(139, 92, 246, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.asset-item-row:hover {
+  border-color: var(--border-color-hover);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.asset-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.asset-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asset-item-row.chess .asset-item-icon { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.asset-item-row.coding .asset-item-icon { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+.asset-item-row.communication .asset-item-icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.asset-item-row.reading .asset-item-icon { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.asset-item-row.video .asset-item-icon { background: rgba(244, 63, 94, 0.1); color: #f43f5e; }
+.asset-item-row.singing .asset-item-icon { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
+.asset-item-row.others .asset-item-icon { background: rgba(148, 163, 184, 0.1); color: #94a3b8; }
+
+.asset-item-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-item-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.asset-item-category {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.asset-item-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Transactions Table Card */
+.transactions-card {
+  padding: 1.5rem;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.table-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.filters-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.search-wrapper {
+  position: relative;
+  min-width: 220px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.55rem 1rem 0.55rem 2.2rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  transition: var(--transition-smooth);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.select-filter {
+  padding: 0.55rem 1.75rem 0.55rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 1rem;
+  transition: var(--transition-smooth);
+}
+
+body.light-theme .select-filter {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234f46e5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+}
+
+.select-filter:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.custom-table th {
+  background: rgba(139, 92, 246, 0.02);
+  padding: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.custom-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.custom-table tbody tr {
+  transition: var(--transition-fast);
+}
+
+.custom-table tbody tr:hover {
+  background: rgba(139, 92, 246, 0.015);
+}
+
+.custom-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table cells formatting */
+.td-date {
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.td-desc {
+  font-weight: 500;
+}
+
+.badge-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(139, 92, 246, 0.08);
+}
+
+/* Category mapping classes */
+.badge-category.chess { background: rgba(245, 158, 11, 0.08); color: #f59e0b; }
+.badge-category.coding { background: rgba(99, 102, 241, 0.08); color: #6366f1; }
+.badge-category.communication { background: rgba(16, 185, 129, 0.08); color: #10b981; }
+.badge-category.reading { background: rgba(139, 92, 246, 0.08); color: #8b5cf6; }
+.badge-category.video { background: rgba(244, 63, 94, 0.08); color: #f43f5e; }
+.badge-category.singing { background: rgba(6, 182, 212, 0.08); color: #06b6d4; }
+.badge-category.others { background: rgba(148, 163, 184, 0.08); color: var(--text-secondary); }
+
+.td-amount {
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.td-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.action-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.action-btn.delete:hover {
+  background: var(--color-expense-bg);
+  color: var(--color-expense);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Empty State Table */
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  color: var(--text-muted);
+}
+
+.empty-state p {
+  max-width: 300px;
+  font-size: 0.95rem;
+}
+
+/* Premium Dialog / Modal */
+dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: var(--text-primary);
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), var(--shadow-premium);
+  
+  opacity: 0;
+  transform: scale(0.9) translateY(10px);
+  transition-property: opacity, transform, display, overlay;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-behavior: allow-discrete;
+}
+
+body.light-theme dialog {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.12), var(--shadow-premium);
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: 
+    display 0.3s allow-discrete,
+    overlay 0.3s allow-discrete,
+    background-color 0.3s ease-out,
+    backdrop-filter 0.3s ease-out;
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+}
+
+dialog[open]::backdrop {
+  background-color: rgba(4, 3, 8, 0.8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  @starting-style {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+}
+
+body.light-theme dialog[open]::backdrop {
+  background-color: rgba(30, 27, 46, 0.45);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  dialog {
+    transform: none;
+    transition-duration: 0.15s;
+  }
+  dialog[open] {
+    @starting-style {
+      transform: none;
+    }
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.modal-header h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--text-primary);
+}
+
+/* Forms layout */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.25rem;
+}
+
+/* Shimmer Loading */
+.shimmer-loader {
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(to right, rgba(139, 92, 246, 0.03) 4%, rgba(139, 92, 246, 0.1) 25%, rgba(139, 92, 246, 0.03) 36%);
+  background-size: 800px 104px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+@keyframes pulse-danger-bar {
+  0%, 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+}
+
+.form-helper {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Toast Alerts */
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.toast {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  background: rgba(18, 16, 28, 0.95);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.6);
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slide-in-toast 0.3s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body.light-theme .toast {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1e1b4b;
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15);
+}
+
+.toast.success { border-left: 4px solid var(--color-income); }
+.toast.error { border-left: 4px solid var(--color-expense); }
+.toast.info { border-left: 4px solid var(--color-primary); }
+
+@keyframes slide-in-toast {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Onboarding Wizard */
+.onboarding-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.onboarding-steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 0.5rem 0 1.5rem 0;
+}
+
+.onboarding-steps-indicator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: var(--border-color);
+  z-index: 1;
+}
+
+.onboarding-step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 2;
+  transition: var(--transition-smooth);
+}
+
+.onboarding-step-dot.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.onboarding-step-dot.completed {
+  background: var(--color-income);
+  border-color: var(--color-income);
+  color: #ffffff;
+}
+
+.onboarding-step-content {
+  display: none;
+  animation: fade-in-step 0.25s ease-out forwards;
+}
+
+.onboarding-step-content.active {
+  display: block;
+}
+
+.onboarding-header-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.onboarding-header-info i {
+  font-size: 3rem;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-header-info h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.onboarding-header-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Milestones styling */
+.milestones-mgr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+  background: rgba(139, 92, 246, 0.02);
+}
+
+.milestones-mgr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+.milestones-mgr-row:last-child {
+  border-bottom: none;
+}
+
+.milestones-mgr-row.completed-row .milestone-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.milestone-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.milestone-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.milestone-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.milestone-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Checkbox style custom overlay */
+.checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  appearance: none;
+  background: var(--bg-input);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked {
+  background: var(--color-income);
+  border-color: var(--color-income);
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  left: 3px;
+  top: -1px;
+}
+
+/* ======================================================== */
+/* MEDIA QUERIES FOR RESPONSIVENESS AND MOBILE OPTIMIZATIONS */
+/* ======================================================== */
+
+@media (max-width: 1400px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  .assets-grid-layout {
+    grid-template-columns: 1fr;
+  }
+  .details-row-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 12px; /* Reduces all REM elements globally by 25% */
+  }
+
+  body {
+    background-image: 
+      radial-gradient(circle at 50% 10%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+  }
+
+  .app-container {
+    padding: 1.25rem 0.85rem;
+  }
+
+  .app-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-controls .btn-primary {
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .summary-card {
+    padding: 1rem;
+  }
+
+  .card-value {
+    font-size: 1.4rem;
+  }
+
+  .chart-card {
+    height: 320px;
+    padding: 1rem;
+  }
+
+  .budget-card {
+    height: 340px;
+    padding: 1rem;
+  }
+
+  .analytics-card {
+    height: 340px;
+    padding: 1rem;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .filters-group {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .search-wrapper {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .select-filter {
+    width: 100%;
+  }
+
+  .table-wrapper {
+    border-radius: var(--radius-sm);
+  }
+
+  .custom-table th, .custom-table td {
+    padding: 0.75rem 0.65rem;
+    font-size: 0.85rem;
+  }
+
+  .td-actions {
+    gap: 0.2rem;
+  }
+
+  .action-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  dialog {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .brand-name h1 {
+    font-size: 1.5rem;
+  }
+}
+
+</style>
 
   <!-- FontAwesome for vector icons (strictly no emojis) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -631,7 +2177,1481 @@
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Core Javascript Application Script -->
-  <script src="skills.js"></script>
+  <script>
+// LevelUp Skills Progress Tracker - Core Logic & Sync Engine
+// Connects to Supabase database (ajwezyvnkbuxmkgqpcjs) or runs locally in Sandbox Mode
+
+// Global Application State
+const state = {
+  skills: [],       // skills (name, level, hours_spent, target_hours)
+  logs: [],         // skill_logs (skill_name, date, duration, activity, notes)
+  milestones: [],   // skill_milestones (skill_name, milestone_text, completed, target_date)
+  filters: {
+    search: '',
+    skill: 'all',
+    sortBy: 'newest'
+  },
+  pagination: {
+    currentPage: 1,
+    itemsPerPage: 8
+  },
+  isSupabaseConnected: false
+};
+
+// SVG / FontAwesome Icons mapping for skills (strictly no emojis)
+const SVG_ICONS = {
+  'Chess': 'fa-solid fa-chess-knight',
+  'Coding': 'fa-solid fa-code',
+  'Communication': 'fa-solid fa-comments',
+  'Reading': 'fa-solid fa-book-open',
+  'Video Editing': 'fa-solid fa-video',
+  'Singing': 'fa-solid fa-music',
+  'others': 'fa-solid fa-graduation-cap',
+  edit: 'fa-solid fa-pen-to-square',
+  trash: 'fa-solid fa-trash-can',
+  check: 'fa-solid fa-check',
+  alert: 'fa-solid fa-triangle-exclamation',
+  info: 'fa-solid fa-info-circle',
+  trend: 'fa-solid fa-chart-column',
+  search: 'fa-solid fa-magnifying-glass'
+};
+
+// Skill color mapping for UI classes
+const SKILL_THEME_COLORS = {
+  'Chess': '#f59e0b',          // Amber
+  'Coding': '#6366f1',         // Indigo
+  'Communication': '#10b981',  // Emerald
+  'Reading': '#8b5cf6',        // Violet
+  'Video Editing': '#f43f5e',  // Rose
+  'Singing': '#06b6d4',        // Cyan
+  'others': '#94a3b8'          // Slate
+};
+
+// Global Chart References
+let skillsAllocationChartInstance = null;
+let trendChartInstance = null;
+let growthChartInstance = null;
+
+// Supabase Client Connection Details
+let supabaseClient = null;
+const DEFAULT_URL = 'https://ajwezyvnkbuxmkgqpcjs.supabase.co';
+const DEFAULT_PUBLISHABLE_KEY = 'sb_publishable_WnOcdyZp-2dgTz1O5pitzg_dLqK29mj';
+
+// ----------------------------------------------------
+// 1. Initialization and Theme Setup
+// ----------------------------------------------------
+document.addEventListener('DOMContentLoaded', async () => {
+  initTheme();
+  initModalListeners();
+  initFilterListeners();
+
+  const onboardingCompleted = localStorage.getItem('skills_onboarding_completed') === 'true';
+
+  if (!onboardingCompleted) {
+    // Fill onboard form with defaults
+    document.getElementById('onboard-url').value = DEFAULT_URL;
+    document.getElementById('onboard-key').value = DEFAULT_PUBLISHABLE_KEY;
+    document.getElementById('onboarding-dialog').showModal();
+  } else {
+    await initDatabaseConnection();
+    await loadData();
+  }
+});
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('skills_theme') || 'dark';
+  const body = document.body;
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  if (savedTheme === 'light') {
+    body.classList.add('light-theme');
+    if (sunIcon && moonIcon) {
+      sunIcon.style.display = 'inline-block';
+      moonIcon.style.display = 'none';
+    }
+  } else {
+    body.classList.remove('light-theme');
+    if (sunIcon && moonIcon) {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'inline-block';
+    }
+  }
+
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const isLight = body.classList.toggle('light-theme');
+    localStorage.setItem('skills_theme', isLight ? 'light' : 'dark');
+
+    if (isLight) {
+      if (sunIcon && moonIcon) {
+        sunIcon.style.display = 'inline-block';
+        moonIcon.style.display = 'none';
+      }
+      showToast('Switched to Light Theme', 'info');
+    } else {
+      if (sunIcon && moonIcon) {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'inline-block';
+      }
+      showToast('Switched to Dark Theme', 'info');
+    }
+    renderCharts();
+  });
+}
+
+function initModalListeners() {
+  const dialogs = document.querySelectorAll('dialog');
+
+  dialogs.forEach(dialog => {
+    if (dialog.id === 'onboarding-dialog') return;
+
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      dialog.addEventListener('click', (event) => {
+        if (event.target !== dialog) return;
+
+        const rect = dialog.getBoundingClientRect();
+        const isDialogContent = (
+          rect.top <= event.clientY &&
+          event.clientY <= rect.top + rect.height &&
+          rect.left <= event.clientX &&
+          event.clientX <= rect.left + rect.width
+        );
+
+        if (isDialogContent) return;
+        dialog.close();
+      });
+    }
+
+    const closeBtn = dialog.querySelector('.modal-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => dialog.close());
+    }
+  });
+
+  // Attach submit listeners to forms
+  document.getElementById('log-form').addEventListener('submit', handleLogSubmit);
+  document.getElementById('milestone-form').addEventListener('submit', handleMilestoneSubmit);
+  document.getElementById('skills-config-form').addEventListener('submit', handleSkillsConfigSubmit);
+  document.getElementById('setup-form').addEventListener('submit', handleSetupSubmit);
+}
+
+// ----------------------------------------------------
+// 2. Supabase Integration & Connection
+// ----------------------------------------------------
+async function initDatabaseConnection() {
+  let url = localStorage.getItem('skills_supabase_url');
+  if (url === null) {
+    url = DEFAULT_URL;
+    localStorage.setItem('skills_supabase_url', DEFAULT_URL);
+  }
+
+  let key = localStorage.getItem('skills_supabase_key');
+  if (key === null) {
+    key = DEFAULT_PUBLISHABLE_KEY;
+    localStorage.setItem('skills_supabase_key', DEFAULT_PUBLISHABLE_KEY);
+  }
+
+  if (!url) {
+    updateSyncUI('disconnected', 'Sandbox Mode');
+    state.isSupabaseConnected = false;
+    return;
+  }
+
+  updateSyncUI('syncing', 'Connecting...');
+
+  try {
+    if (typeof supabase === 'undefined') {
+      throw new Error('Supabase client library not loaded.');
+    }
+
+    supabaseClient = supabase.createClient(url, key);
+
+    // Run connection probe on skills table
+    const { error } = await supabaseClient.from('skills').select('*', { count: 'exact', head: true }).limit(1);
+    if (error) throw error;
+
+    updateSyncUI('connected', 'Synced');
+    state.isSupabaseConnected = true;
+  } catch (err) {
+    console.error('Supabase connection error:', err);
+    updateSyncUI('error', 'Connection Error');
+    state.isSupabaseConnected = false;
+    showToast('Failed to sync. Running in Local Sandbox mode.', 'error');
+  }
+}
+
+function updateSyncUI(status, label) {
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('sync-text');
+  if (dot && text) {
+    dot.className = 'status-dot';
+    dot.classList.add(status);
+    text.textContent = label;
+  }
+}
+
+// ----------------------------------------------------
+// 3. Data Loading Engine
+// ----------------------------------------------------
+async function loadData() {
+  if (state.isSupabaseConnected) {
+    await fetchFromSupabase();
+  } else {
+    fetchFromLocalStorage();
+  }
+
+  state.pagination.currentPage = 1;
+  updateUI();
+}
+
+async function fetchFromSupabase() {
+  try {
+    // Fetch skills
+    const { data: skillData, error: skillErr } = await supabaseClient
+      .from('skills')
+      .select('*')
+      .order('name', { ascending: true });
+    if (skillErr) throw skillErr;
+    state.skills = skillData || [];
+
+    // Fetch logs
+    const { data: logData, error: logErr } = await supabaseClient
+      .from('skill_logs')
+      .select('*')
+      .order('date', { ascending: false });
+    if (logErr) throw logErr;
+    state.logs = logData || [];
+
+    // Fetch milestones
+    const { data: msData, error: msErr } = await supabaseClient
+      .from('skill_milestones')
+      .select('*')
+      .order('target_date', { ascending: true });
+    if (msErr) throw msErr;
+    state.milestones = msData || [];
+  } catch (err) {
+    console.error('Supabase fetch error:', err);
+    showToast('Sync fetch failed. Falling back to local sandbox storage.', 'error');
+    fetchFromLocalStorage();
+  }
+}
+
+function fetchFromLocalStorage() {
+  const skillsStr = localStorage.getItem('local_skills');
+  const logsStr = localStorage.getItem('local_skill_logs');
+  const msStr = localStorage.getItem('local_skill_milestones');
+
+  state.skills = skillsStr ? JSON.parse(skillsStr) : getDemoSkills();
+  state.logs = logsStr ? JSON.parse(logsStr) : [];
+  state.milestones = msStr ? JSON.parse(msStr) : [];
+}
+
+function saveToLocalStorageOnly() {
+  localStorage.setItem('local_skills', JSON.stringify(state.skills));
+  localStorage.setItem('local_skill_logs', JSON.stringify(state.logs));
+  localStorage.setItem('local_skill_milestones', JSON.stringify(state.milestones));
+}
+
+function getDemoSkills() {
+  return [
+    { name: 'Chess', level: 1, hours_spent: 0.0, target_hours: 20.0 },
+    { name: 'Coding', level: 1, hours_spent: 0.0, target_hours: 20.0 },
+    { name: 'Communication', level: 1, hours_spent: 0.0, target_hours: 20.0 },
+    { name: 'Reading', level: 1, hours_spent: 0.0, target_hours: 20.0 },
+    { name: 'Video Editing', level: 1, hours_spent: 0.0, target_hours: 20.0 },
+    { name: 'Singing', level: 1, hours_spent: 0.0, target_hours: 20.0 }
+  ];
+}
+
+// ----------------------------------------------------
+// 4. UI Dashboard Render Engine
+// ----------------------------------------------------
+function updateUI() {
+  renderKPIs();
+  renderMilestonesSection();
+  renderSkillsConfigList();
+  renderIntelligenceSection();
+  renderLogsTable();
+  renderCharts();
+}
+
+// 4.1 KPIs Rendering
+function renderKPIs() {
+  state.skills.forEach(skill => {
+    const safeName = skill.name.replaceAll(' ', '_');
+    const levelElement = document.getElementById(`kpi-level-${safeName}`);
+    const hoursElement = document.getElementById(`kpi-hours-${safeName}`);
+    const barElement = document.getElementById(`kpi-bar-${safeName}`);
+
+    if (levelElement && hoursElement && barElement) {
+      levelElement.textContent = `Lvl ${skill.level}`;
+      hoursElement.textContent = `${parseFloat(skill.hours_spent).toFixed(1)} / ${parseFloat(skill.target_hours).toFixed(0)} hrs`;
+
+      // Level progress arithmetic
+      const currentLevelExp = parseFloat(skill.hours_spent) % parseFloat(skill.target_hours);
+      const percentage = Math.min((currentLevelExp / parseFloat(skill.target_hours)) * 100, 100);
+      barElement.style.width = `${percentage}%`;
+    }
+  });
+}
+
+// 4.2 Milestones List Rendering
+function renderMilestonesSection() {
+  const msList = document.getElementById('milestones-list');
+  if (!msList) return;
+  msList.innerHTML = '';
+
+  if (state.milestones.length === 0) {
+    msList.innerHTML = `
+      <div class="budget-empty">
+        <i class="fa-solid fa-flag"></i>
+        <p>No milestones set. Create milestone targets to level up!</p>
+        <button class="btn btn-secondary btn-sm" onclick="openAddMilestoneModal()" style="margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Set Target</button>
+      </div>
+    `;
+    return;
+  }
+
+  state.milestones.forEach(ms => {
+    const dateStr = ms.target_date ? formatDateStrShort(ms.target_date) : 'No date';
+    const isCompletedClass = ms.completed ? 'completed-row' : '';
+
+    const row = document.createElement('div');
+    row.className = `milestones-mgr-row ${isCompletedClass}`;
+    row.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <label class="checkbox-wrapper" title="Mark milestone complete">
+          <input type="checkbox" ${ms.completed ? 'checked' : ''} onchange="toggleMilestoneCompletion('${ms.id}', this.checked)">
+        </label>
+        <div class="milestone-details">
+          <span class="milestone-text">${escapeHtml(ms.milestone_text)}</span>
+          <span class="milestone-meta">${escapeHtml(ms.skill_name)} &bull; Target: ${dateStr}</span>
+        </div>
+      </div>
+      <div class="milestone-actions">
+        <button class="action-btn delete" onclick="deleteMilestoneItem('${ms.id}')" title="Delete Milestone" style="width: 24px; height: 24px; font-size: 0.75rem;">
+          ${getIconHTML('trash')}
+        </button>
+      </div>
+    `;
+    msList.appendChild(row);
+  });
+}
+
+// 4.3 Skills Configurations List Rendering (Slider target hours)
+function renderSkillsConfigList() {
+  const container = document.getElementById('skills-progress-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  state.skills.forEach(skill => {
+    const config = GOAL_CONFIG(skill.name);
+    const hours = parseFloat(skill.hours_spent) || 0;
+    const target = parseFloat(skill.target_hours) || 20.0;
+    const currentLvlExp = hours % target;
+    const percentage = Math.min((currentLvlExp / target) * 100, 100);
+
+    const itemHtml = `
+      <div class="budget-item">
+        <div class="budget-item-info">
+          <span class="budget-category">
+            ${getIconHTML(config.icon)}
+            ${skill.name} (Lvl ${skill.level})
+          </span>
+          <span class="budget-amount">
+            ${hours.toFixed(1)} <span>/ ${target.toFixed(0)} hrs</span>
+          </span>
+        </div>
+        <div class="budget-bar-bg">
+          <div class="budget-bar-fill" style="width: ${percentage}%"></div>
+        </div>
+      </div>
+    `;
+    container.insertAdjacentHTML('beforeend', itemHtml);
+  });
+}
+
+// 4.4 Learning Intelligence Section
+function renderIntelligenceSection() {
+  const topPracticeList = document.getElementById('top-practice-list');
+  const dominantContainer = document.getElementById('dominant-skill-container');
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  // Monthly filtered logs
+  const monthlyLogs = state.logs.filter(l => {
+    const d = new Date(l.date);
+    return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+  });
+
+  // Peak session length
+  if (topPracticeList) {
+    topPracticeList.innerHTML = '';
+    const sortedLogs = [...monthlyLogs].sort((a, b) => b.duration - a.duration);
+    const totalHours = state.logs.reduce((acc, l) => acc + (parseFloat(l.duration) || 0), 0);
+
+    if (sortedLogs.length === 0) {
+      topPracticeList.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem 0;">No logs recorded this month.</div>`;
+    } else {
+      const peakLog = sortedLogs[0];
+      topPracticeList.innerHTML = `
+        <div class="top-spent-item">
+          <span class="top-spent-cat">
+            ${getIconHTML(GOAL_CONFIG(peakLog.skill_name).icon)} Peak Session (${peakLog.skill_name})
+          </span>
+          <span class="top-spent-val">
+            ${parseFloat(peakLog.duration).toFixed(1)} <span>hrs</span>
+          </span>
+        </div>
+        <div class="top-spent-item" style="margin-top: 0.5rem;">
+          <span class="top-spent-cat">
+            <i class="fa-solid fa-hourglass-half"></i> Cumulative (All Skills)
+          </span>
+          <span class="top-spent-val" style="color: var(--color-secondary);">
+            ${totalHours.toFixed(1)} <span>hrs spent</span>
+          </span>
+        </div>
+      `;
+    }
+  }
+
+  // Dominant learning category this month (most hours logged)
+  if (dominantContainer) {
+    dominantContainer.innerHTML = '';
+
+    const skillHours = {};
+    monthlyLogs.forEach(l => {
+      skillHours[l.skill_name] = (skillHours[l.skill_name] || 0) + parseFloat(l.duration);
+    });
+
+    const sortedSkills = Object.entries(skillHours).sort((a, b) => b[1] - a[1]);
+
+    if (sortedSkills.length === 0) {
+      dominantContainer.innerHTML = `
+        <div class="peak-transaction-box" style="justify-content: center; border-style: solid; padding: 0.75rem;">
+          <span style="font-size: 0.85rem; color: var(--text-muted);">No logs logged this month yet.</span>
+        </div>
+      `;
+    } else {
+      const [skillName, hours] = sortedSkills[0];
+      const icon = GOAL_CONFIG(skillName).icon;
+      const progressPercent = state.skills.find(s => s.name === skillName) ?
+        (hours / state.skills.find(s => s.name === skillName).target_hours) * 100 : 0;
+
+      dominantContainer.innerHTML = `
+        <div class="peak-transaction-box">
+          <div class="peak-icon-wrapper" style="background: var(--color-primary-glow); color: var(--color-primary);">
+            ${getIconHTML(icon)}
+          </div>
+          <div class="peak-details">
+            <span class="peak-title">${skillName}</span>
+            <span class="peak-meta">Practiced ${hours.toFixed(1)} hours this month</span>
+          </div>
+          <span class="peak-amount" style="color: var(--color-income); font-size: 0.95rem;">
+            ${progressPercent.toFixed(0)}% lvl XP
+          </span>
+        </div>
+      `;
+    }
+  }
+}
+
+// 4.5 Logs Table Ledger Rendering
+function renderLogsTable() {
+  const tbody = document.getElementById('logs-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  // Filter logs
+  let filtered = state.logs.filter(log => {
+    const searchVal = state.filters.search.toLowerCase();
+    const matchSearch = log.activity.toLowerCase().includes(searchVal) ||
+      (log.notes && log.notes.toLowerCase().includes(searchVal)) ||
+      log.date.includes(searchVal);
+
+    const matchSkill = state.filters.skill === 'all' || log.skill_name === state.filters.skill;
+    return matchSearch && matchSkill;
+  });
+
+  // Sort logs
+  filtered.sort((a, b) => {
+    if (state.filters.sortBy === 'newest') return new Date(b.date) - new Date(a.date);
+    if (state.filters.sortBy === 'oldest') return new Date(a.date) - new Date(b.date);
+    if (state.filters.sortBy === 'longest') return parseFloat(b.duration) - parseFloat(a.duration);
+    if (state.filters.sortBy === 'shortest') return parseFloat(a.duration) - parseFloat(b.duration);
+    return 0;
+  });
+
+  // Pagination
+  const totalItems = filtered.length;
+  const itemsPerPage = state.pagination.itemsPerPage;
+  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+  if (state.pagination.currentPage > totalPages) {
+    state.pagination.currentPage = totalPages;
+  }
+
+  const startIndex = (state.pagination.currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+  const paginated = filtered.slice(startIndex, endIndex);
+
+  // Update Page details
+  document.getElementById('page-info').textContent = totalItems > 0
+    ? `Showing ${startIndex + 1}–${endIndex} of ${totalItems} sessions`
+    : 'No practice sessions';
+
+  document.getElementById('prev-btn').disabled = state.pagination.currentPage === 1;
+  document.getElementById('next-btn').disabled = state.pagination.currentPage === totalPages;
+
+  if (paginated.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5">
+          <div class="empty-state">
+            ${getIconHTML('search')}
+            <p>No matching practice sessions found. Log a session to build XP.</p>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  // Render rows
+  paginated.forEach(log => {
+    const config = GOAL_CONFIG(log.skill_name);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-date">${formatDateStr(log.date)}</td>
+      <td>
+        <span class="badge-category ${log.skill_name.toLowerCase().replace(' ', '')}">
+          ${getIconHTML(config.icon)}
+          ${log.skill_name}
+        </span>
+      </td>
+      <td style="font-weight: 600;">${parseFloat(log.duration).toFixed(2)} hrs</td>
+      <td>
+        <div class="td-desc">${escapeHtml(log.activity)}</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">
+          ${log.notes ? escapeHtml(log.notes) : 'No notes'}
+        </div>
+      </td>
+      <td class="td-actions">
+        <button class="action-btn" onclick="openEditLogModal('${log.id}')" title="Edit Session Log">
+          ${getIconHTML('edit')}
+        </button>
+        <button class="action-btn delete" onclick="deleteLogItem('${log.id}')" title="Delete Session Log">
+          ${getIconHTML('trash')}
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ----------------------------------------------------
+// 5. Data Visualizations (Chart.js)
+// ----------------------------------------------------
+function renderCharts() {
+  const canvasAllocation = document.getElementById('skillsAllocationChart');
+  const canvasTrend = document.getElementById('trendChart');
+  const canvasGrowth = document.getElementById('growthChart');
+
+  if (!canvasAllocation || !canvasTrend || !canvasGrowth) return;
+
+  const isLightTheme = document.body.classList.contains('light-theme');
+  const textColor = isLightTheme ? '#4f46e5' : '#9ca3af';
+  const gridColor = isLightTheme ? 'rgba(99, 102, 241, 0.05)' : 'rgba(255, 255, 255, 0.02)';
+
+  // Destroy previous instances
+  if (skillsAllocationChartInstance) skillsAllocationChartInstance.destroy();
+  if (trendChartInstance) trendChartInstance.destroy();
+  if (growthChartInstance) growthChartInstance.destroy();
+
+  // 1. Practice Hours Allocation (Doughnut Chart)
+  const allocationLabels = [];
+  const allocationData = [];
+  const allocationColors = [];
+  let totalHoursSum = 0;
+
+  state.skills.forEach(skill => {
+    const hrs = parseFloat(skill.hours_spent) || 0;
+    allocationLabels.push(skill.name);
+    allocationData.push(hrs);
+    allocationColors.push(SKILL_THEME_COLORS[skill.name] || '#64748b');
+    totalHoursSum += hrs;
+  });
+
+  const isZeroAllocation = totalHoursSum === 0;
+  const pieData = isZeroAllocation ? [16.6, 16.6, 16.6, 16.6, 16.6, 16.6] : allocationData;
+  const pieColors = isZeroAllocation ? (isLightTheme ? ['#e2e8f0', '#cbd5e1', '#94a3b8', '#e2e8f0', '#cbd5e1', '#94a3b8'] : ['#1e293b', '#334155', '#475569', '#1e293b', '#334155', '#475569']) : allocationColors;
+
+  skillsAllocationChartInstance = new Chart(canvasAllocation, {
+    type: 'doughnut',
+    data: {
+      labels: allocationLabels,
+      datasets: [{
+        data: pieData,
+        backgroundColor: pieColors,
+        borderWidth: 1,
+        borderColor: isLightTheme ? '#ffffff' : 'rgba(255, 255, 255, 0.05)',
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: textColor, font: { family: 'Outfit', size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              if (isZeroAllocation) return ` ${context.label}: No hours logged`;
+              const value = context.raw;
+              const percent = ((value / totalHoursSum) * 100).toFixed(1);
+              return ` ${context.label}: ${parseFloat(value).toFixed(1)} hrs (${percent}%)`;
+            }
+          }
+        }
+      },
+      cutout: '65%'
+    }
+  });
+
+  // 2. Weekly Practice Trend - Last 6 Logged Days (Grouped Bar Chart)
+  // Retrieve last 6 days of logged entries in chronological order
+  const dailyAllocation = {};
+  const active6Days = [];
+
+  // Aggregate daily practice hours per skill
+  state.logs.forEach(l => {
+    if (!dailyAllocation[l.date]) {
+      dailyAllocation[l.date] = {};
+    }
+    dailyAllocation[l.date][l.skill_name] = (dailyAllocation[l.date][l.skill_name] || 0) + parseFloat(l.duration);
+  });
+
+  const sortedDates = Object.keys(dailyAllocation).sort().slice(-6); // last 6 dates
+
+  const barLabels = sortedDates.map(d => formatDateStrShort(d));
+  const datasets = [];
+
+  state.skills.forEach(skill => {
+    const data = sortedDates.map(date => dailyAllocation[date][skill.name] || 0);
+    datasets.push({
+      label: skill.name,
+      data: data,
+      backgroundColor: SKILL_THEME_COLORS[skill.name] + 'cc',
+      borderColor: SKILL_THEME_COLORS[skill.name],
+      borderWidth: 1,
+      borderRadius: 3
+    });
+  });
+
+  const defaultLabels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6'];
+  const trendLabels = sortedDates.length > 0 ? barLabels : defaultLabels;
+
+  trendChartInstance = new Chart(canvasTrend, {
+    type: 'bar',
+    data: {
+      labels: trendLabels,
+      datasets: sortedDates.length > 0 ? datasets : []
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { color: textColor, font: { family: 'Outfit', size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return ` ${context.dataset.label}: ${parseFloat(context.raw).toFixed(1)} hrs`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: gridColor },
+          ticks: { color: textColor, font: { family: 'Outfit' } }
+        },
+        y: {
+          grid: { color: gridColor },
+          ticks: {
+            color: textColor,
+            font: { family: 'Outfit' },
+            callback: function (value) { return value + ' hrs'; }
+          }
+        }
+      }
+    }
+  });
+
+  // 3. Cumulative Growth line chart over last 6 dates
+  let runningSum = 0;
+  const growthData = [];
+
+  // Sort dates chronological
+  const allLoggedDates = Object.keys(dailyAllocation).sort();
+  allLoggedDates.forEach(date => {
+    let dayTotal = 0;
+    Object.values(dailyAllocation[date]).forEach(val => dayTotal += val);
+    runningSum += dayTotal;
+    growthData.push({ date, total: runningSum });
+  });
+
+  const lineDates = growthData.slice(-6).map(gd => formatDateStrShort(gd.date));
+  const lineValues = growthData.slice(-6).map(gd => gd.total);
+
+  const growthLabels = lineDates.length > 0 ? lineDates : defaultLabels;
+  const growthPoints = lineValues.length > 0 ? lineValues : [0, 0, 0, 0, 0, 0];
+
+  growthChartInstance = new Chart(canvasGrowth, {
+    type: 'line',
+    data: {
+      labels: growthLabels,
+      datasets: [{
+        label: 'Cumulative Hours Spent',
+        data: growthPoints,
+        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+        borderColor: '#8b5cf6',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: '#8b5cf6'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { color: textColor, font: { family: 'Outfit', size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return ` Total Time: ${parseFloat(context.raw).toFixed(1)} hrs`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: gridColor },
+          ticks: { color: textColor, font: { family: 'Outfit' } }
+        },
+        y: {
+          grid: { color: gridColor },
+          ticks: {
+            color: textColor,
+            font: { family: 'Outfit' },
+            callback: function (value) { return value + ' hrs'; }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ----------------------------------------------------
+// 6. CRUD Submissions & Dialog Handlers
+// ----------------------------------------------------
+
+// 6.1 Daily Logs CRUD
+window.openLogPracticeModal = function () {
+  document.getElementById('log-dialog-title-text').textContent = 'Log Practice Session';
+  document.getElementById('log-id').value = '';
+  document.getElementById('l-skill').value = 'Coding';
+  document.getElementById('l-date').value = new Date().toLocaleDateString('en-CA');
+  document.getElementById('l-duration').value = '';
+  document.getElementById('l-activity').value = '';
+  document.getElementById('l-notes').value = '';
+
+  document.getElementById('log-dialog').showModal();
+};
+
+window.openEditLogModal = function (id) {
+  const log = state.logs.find(l => l.id === id);
+  if (!log) return;
+
+  document.getElementById('log-dialog-title-text').textContent = 'Edit Practice Session';
+  document.getElementById('log-id').value = log.id;
+  document.getElementById('l-skill').value = log.skill_name;
+  document.getElementById('l-date').value = log.date;
+  document.getElementById('l-duration').value = log.duration;
+  document.getElementById('l-activity').value = log.activity;
+  document.getElementById('l-notes').value = log.notes || '';
+
+  document.getElementById('log-dialog').showModal();
+};
+
+async function handleLogSubmit(e) {
+  e.preventDefault();
+
+  const id = document.getElementById('log-id').value;
+  const skill_name = document.getElementById('l-skill').value;
+  const date = document.getElementById('l-date').value;
+  const duration = parseFloat(document.getElementById('l-duration').value);
+  const activity = document.getElementById('l-activity').value.trim();
+  const notes = document.getElementById('l-notes').value.trim();
+
+  if (!skill_name || !date || isNaN(duration) || duration <= 0 || !activity) {
+    showToast('Please fill all required practice session fields.', 'error');
+    return;
+  }
+
+  const logData = {
+    skill_name,
+    date,
+    duration,
+    activity,
+    notes
+  };
+
+  updateSyncUI('syncing', 'Saving Practice Session...');
+
+  try {
+    if (state.isSupabaseConnected) {
+      if (id) {
+        // Fetch old duration to deduct from skill
+        const oldLog = state.logs.find(l => l.id === id);
+        const oldDuration = oldLog ? parseFloat(oldLog.duration) : 0;
+        const oldSkillName = oldLog ? oldLog.skill_name : skill_name;
+
+        // Perform transactional update in javascript lists: update skill hours spent
+        const diff = duration - (oldSkillName === skill_name ? oldDuration : 0);
+
+        const { error } = await supabaseClient
+          .from('skill_logs')
+          .update(logData)
+          .eq('id', id);
+        if (error) throw error;
+
+        // Update target skill total hours
+        await updateSkillHours(skill_name, diff);
+
+        // Deduct duration from old skill if changed
+        if (oldSkillName !== skill_name && oldDuration > 0) {
+          await updateSkillHours(oldSkillName, -oldDuration);
+        }
+
+        showToast('Practice session log updated successfully.', 'success');
+      } else {
+        const { error } = await supabaseClient
+          .from('skill_logs')
+          .insert([logData]);
+        if (error) throw error;
+
+        await updateSkillHours(skill_name, duration);
+        showToast('Practice session logged successfully.', 'success');
+      }
+    } else {
+      // Local Sandbox Modes
+      if (id) {
+        const idx = state.logs.findIndex(l => l.id === id);
+        if (idx !== -1) {
+          const oldLog = state.logs[idx];
+          // Deduct/Add hours
+          updateLocalSkillHours(oldLog.skill_name, -oldLog.duration);
+          updateLocalSkillHours(skill_name, duration);
+
+          state.logs[idx] = { ...oldLog, ...logData };
+          showToast('Practice session updated locally.', 'success');
+        }
+      } else {
+        const newLocalLog = {
+          id: 'local_slog_' + Date.now(),
+          created_at: new Date().toISOString(),
+          ...logData
+        };
+        state.logs.unshift(newLocalLog);
+        updateLocalSkillHours(skill_name, duration);
+        showToast('Practice session logged locally (Sandbox).', 'success');
+      }
+      saveToLocalStorageOnly();
+    }
+
+    document.getElementById('log-dialog').close();
+    await loadData();
+  } catch (err) {
+    console.error('Error logging practice session:', err);
+    showToast('Failed to save log: ' + err.message, 'error');
+  }
+}
+
+window.deleteLogItem = async function (id) {
+  if (!confirm('Are you sure you want to delete this practice session?')) return;
+  updateSyncUI('syncing', 'Deleting Log...');
+
+  const log = state.logs.find(l => l.id === id);
+  if (!log) return;
+
+  try {
+    if (state.isSupabaseConnected) {
+      const { error } = await supabaseClient
+        .from('skill_logs')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+
+      await updateSkillHours(log.skill_name, -log.duration);
+      showToast('Practice session deleted successfully.', 'success');
+    } else {
+      state.logs = state.logs.filter(l => l.id !== id);
+      updateLocalSkillHours(log.skill_name, -log.duration);
+      saveToLocalStorageOnly();
+      showToast('Practice session deleted locally.', 'success');
+    }
+    await loadData();
+  } catch (err) {
+    console.error('Error deleting log:', err);
+    showToast('Failed to delete practice log: ' + err.message, 'error');
+  }
+};
+
+// Recalculates levels automatically based on hours spent progress thresholds
+async function updateSkillHours(skillName, hoursDiff) {
+  const skill = state.skills.find(s => s.name === skillName);
+  if (!skill) return;
+
+  const newHours = Math.max(parseFloat(skill.hours_spent) + parseFloat(hoursDiff), 0.0);
+  const target = parseFloat(skill.target_hours) || 20.0;
+
+  // Calculate Level = floor(newHours / target) + 1
+  const newLevel = Math.floor(newHours / target) + 1;
+
+  const { error } = await supabaseClient
+    .from('skills')
+    .update({
+      hours_spent: newHours,
+      level: newLevel
+    })
+    .eq('name', skillName);
+
+  if (error) throw error;
+}
+
+function updateLocalSkillHours(skillName, hoursDiff) {
+  const skill = state.skills.find(s => s.name === skillName);
+  if (!skill) return;
+
+  const newHours = Math.max(parseFloat(skill.hours_spent) + parseFloat(hoursDiff), 0.0);
+  const target = parseFloat(skill.target_hours) || 20.0;
+  const newLevel = Math.floor(newHours / target) + 1;
+
+  skill.hours_spent = newHours;
+  skill.level = newLevel;
+}
+
+// 6.2 Milestones targets CRUD
+window.openAddMilestoneModal = function () {
+  document.getElementById('ms-id').value = '';
+  document.getElementById('m-skill').value = 'Coding';
+  document.getElementById('m-text').value = '';
+  document.getElementById('m-date').value = '';
+
+  document.getElementById('milestone-dialog').showModal();
+};
+
+async function handleMilestoneSubmit(e) {
+  e.preventDefault();
+
+  const skill_name = document.getElementById('m-skill').value;
+  const milestone_text = document.getElementById('m-text').value.trim();
+  const target_date = document.getElementById('m-date').value || null;
+
+  if (!skill_name || !milestone_text) {
+    showToast('Please fill all required milestone fields.', 'error');
+    return;
+  }
+
+  const msData = {
+    skill_name,
+    milestone_text,
+    target_date,
+    completed: false
+  };
+
+  updateSyncUI('syncing', 'Saving Milestone...');
+
+  try {
+    if (state.isSupabaseConnected) {
+      const { error } = await supabaseClient
+        .from('skill_milestones')
+        .insert([msData]);
+      if (error) throw error;
+      showToast('Skill milestone target logged successfully.', 'success');
+    } else {
+      const newMs = {
+        id: 'local_ms_' + Date.now(),
+        created_at: new Date().toISOString(),
+        ...msData
+      };
+      state.milestones.unshift(newMs);
+      saveToLocalStorageOnly();
+      showToast('Milestone target logged locally.', 'success');
+    }
+
+    document.getElementById('milestone-dialog').close();
+    await loadData();
+  } catch (err) {
+    console.error('Error logging milestone:', err);
+    showToast('Failed to save milestone: ' + err.message, 'error');
+  }
+}
+
+window.toggleMilestoneCompletion = async function (id, isChecked) {
+  updateSyncUI('syncing', 'Updating Milestone...');
+  try {
+    if (state.isSupabaseConnected) {
+      const { error } = await supabaseClient
+        .from('skill_milestones')
+        .update({ completed: isChecked })
+        .eq('id', id);
+      if (error) throw error;
+      showToast('Milestone completion toggled.', 'success');
+    } else {
+      const idx = state.milestones.findIndex(m => m.id === id);
+      if (idx !== -1) {
+        state.milestones[idx].completed = isChecked;
+        saveToLocalStorageOnly();
+        showToast('Milestone status toggled locally.', 'success');
+      }
+    }
+    await loadData();
+  } catch (err) {
+    console.error('Error toggling milestone:', err);
+    showToast('Failed to toggle milestone: ' + err.message, 'error');
+  }
+};
+
+window.deleteMilestoneItem = async function (id) {
+  if (!confirm('Are you sure you want to delete this milestone goal?')) return;
+  updateSyncUI('syncing', 'Deleting Milestone...');
+
+  try {
+    if (state.isSupabaseConnected) {
+      const { error } = await supabaseClient
+        .from('skill_milestones')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      showToast('Milestone target deleted successfully.', 'success');
+    } else {
+      state.milestones = state.milestones.filter(m => m.id !== id);
+      saveToLocalStorageOnly();
+      showToast('Milestone deleted locally.', 'success');
+    }
+    await loadData();
+  } catch (err) {
+    console.error('Error deleting milestone:', err);
+    showToast('Failed to delete milestone reading: ' + err.message, 'error');
+  }
+};
+
+// 6.3 Target Levels config modal (Sliders configuration)
+window.openSkillsConfigModal = function () {
+  const container = document.getElementById('skills-config-inputs-container');
+  container.innerHTML = '';
+
+  state.skills.forEach(skill => {
+    const config = GOAL_CONFIG(skill.name);
+    const target = parseFloat(skill.target_hours) || 20.0;
+
+    const row = document.createElement('div');
+    row.className = 'form-group form-row';
+    row.style.alignItems = 'center';
+    row.style.marginBottom = '0.75rem';
+
+    row.innerHTML = `
+      <label style="margin-bottom: 0; display: flex; align-items: center; gap: 0.5rem;">
+        ${getIconHTML(config.icon)} ${skill.name} Target Level Up (hrs)
+      </label>
+      <input type="number" step="any" min="1" 
+             name="target-${skill.name}" 
+             placeholder="e.g. 20" 
+             value="${target}" 
+             class="form-control" required>
+    `;
+    container.appendChild(row);
+  });
+
+  document.getElementById('skills-config-dialog').showModal();
+};
+
+async function handleSkillsConfigSubmit(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+  const updatedSkillsTarget = [];
+
+  for (let s of state.skills) {
+    const val = formData.get(`target-${s.name}`);
+    if (val !== null && val !== '') {
+      const target = parseFloat(val);
+      if (!isNaN(target) && target > 0) {
+        updatedSkillsTarget.push({
+          name: s.name,
+          target_hours: target
+        });
+      }
+    }
+  }
+
+  updateSyncUI('syncing', 'Saving Hour Targets...');
+
+  try {
+    if (state.isSupabaseConnected) {
+      for (let s of updatedSkillsTarget) {
+        // Fetch current hours spent to recalculate new level
+        const skillObj = state.skills.find(sk => sk.name === s.name);
+        const hrs = skillObj ? parseFloat(skillObj.hours_spent) : 0;
+        const newLevel = Math.floor(hrs / s.target_hours) + 1;
+
+        const { error } = await supabaseClient
+          .from('skills')
+          .update({
+            target_hours: s.target_hours,
+            level: newLevel
+          })
+          .eq('name', s.name);
+        if (error) throw error;
+      }
+      showToast('Target hour configurations saved to database.', 'success');
+    } else {
+      updatedSkillsTarget.forEach(s => {
+        const skill = state.skills.find(sk => sk.name === s.name);
+        if (skill) {
+          skill.target_hours = s.target_hours;
+          skill.level = Math.floor(parseFloat(skill.hours_spent) / s.target_hours) + 1;
+        }
+      });
+      saveToLocalStorageOnly();
+      showToast('Target hour configurations saved locally.', 'success');
+    }
+
+    document.getElementById('skills-config-dialog').close();
+    await loadData();
+  } catch (err) {
+    console.error('Error saving skills target configurations:', err);
+    showToast('Failed to save targets: ' + err.message, 'error');
+  }
+}
+
+// 6.4 Sync Settings configuration
+window.openSetupModal = function () {
+  document.getElementById('setup-url').value = localStorage.getItem('skills_supabase_url') || '';
+  document.getElementById('setup-key').value = localStorage.getItem('skills_supabase_key') || '';
+  document.getElementById('setup-dialog').showModal();
+};
+
+async function handleSetupSubmit(e) {
+  e.preventDefault();
+
+  const url = document.getElementById('setup-url').value.trim();
+  const key = document.getElementById('setup-key').value.trim();
+
+  if (!url) {
+    localStorage.removeItem('skills_supabase_url');
+    localStorage.removeItem('skills_supabase_key');
+    supabaseClient = null;
+    state.isSupabaseConnected = false;
+    showToast('Disconnected from Supabase. Sandbox mode activated.', 'info');
+  } else {
+    localStorage.setItem('skills_supabase_url', url);
+    if (key) {
+      localStorage.setItem('skills_supabase_key', key);
+    } else {
+      localStorage.removeItem('skills_supabase_key');
+    }
+    showToast('Credentials updated. Connecting...', 'info');
+  }
+
+  document.getElementById('setup-dialog').close();
+  await initDatabaseConnection();
+  await loadData();
+}
+
+// ----------------------------------------------------
+// 7. Filtering & Sorting Handlers
+// ----------------------------------------------------
+function initFilterListeners() {
+  let searchTimeout;
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      state.filters.search = e.target.value;
+      state.pagination.currentPage = 1;
+      updateUI();
+    }, 250);
+  });
+
+  document.getElementById('filter-skill').addEventListener('change', (e) => {
+    state.filters.skill = e.target.value;
+    state.pagination.currentPage = 1;
+    updateUI();
+  });
+
+  document.getElementById('filter-sort').addEventListener('change', (e) => {
+    state.filters.sortBy = e.target.value;
+    state.pagination.currentPage = 1;
+    updateUI();
+  });
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (state.pagination.currentPage > 1) {
+      state.pagination.currentPage--;
+      renderLogsTable();
+    }
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    const totalItems = state.logs.length;
+    const totalPages = Math.ceil(totalItems / state.pagination.itemsPerPage);
+    if (state.pagination.currentPage < totalPages) {
+      state.pagination.currentPage++;
+      renderLogsTable();
+    }
+  });
+}
+
+// ----------------------------------------------------
+// 8. Onboarding Wizard Controls
+// ----------------------------------------------------
+window.nextOnboardingStep = async function (stepNum) {
+  if (stepNum === 2) {
+    const url = document.getElementById('onboard-url').value.trim();
+    const key = document.getElementById('onboard-key').value.trim();
+
+    if (url) {
+      localStorage.setItem('skills_supabase_url', url);
+      if (key) {
+        localStorage.setItem('skills_supabase_key', key);
+      }
+      showToast('Supabase settings pre-configured. Attempting connection...', 'info');
+      await initDatabaseConnection();
+    } else {
+      localStorage.removeItem('skills_supabase_url');
+      localStorage.removeItem('skills_supabase_key');
+      state.isSupabaseConnected = false;
+      updateSyncUI('disconnected', 'Sandbox Mode');
+    }
+  }
+
+  // Toggle wizard contents
+  for (let i = 1; i <= 3; i++) {
+    const content = document.getElementById(`onboard-step-${i}-content`);
+    const dot = document.getElementById(`dot-step-${i}`);
+
+    if (i === stepNum) {
+      content.classList.add('active');
+      dot.classList.add('active');
+    } else {
+      content.classList.remove('active');
+      dot.classList.remove('active');
+    }
+
+    if (i < stepNum) {
+      dot.classList.add('completed');
+    } else {
+      dot.classList.remove('completed');
+    }
+  }
+};
+
+window.skipOnboardingDatabase = function () {
+  localStorage.removeItem('skills_supabase_url');
+  localStorage.removeItem('skills_supabase_key');
+  state.isSupabaseConnected = false;
+  updateSyncUI('disconnected', 'Sandbox Mode');
+  nextOnboardingStep(2);
+};
+
+window.submitOnboarding = async function () {
+  // Collect Step 2: Practice hours inputs
+  const chessHrs = parseFloat(document.getElementById('onboard-chess').value) || 0.0;
+  const codingHrs = parseFloat(document.getElementById('onboard-coding').value) || 0.0;
+  const commHrs = parseFloat(document.getElementById('onboard-communication').value) || 0.0;
+  const readingHrs = parseFloat(document.getElementById('onboard-reading').value) || 0.0;
+  const videoHrs = parseFloat(document.getElementById('onboard-video').value) || 0.0;
+  const singingHrs = parseFloat(document.getElementById('onboard-singing').value) || 0.0;
+
+  // Level mapping based on 20 hr goal steps
+  const initialSkills = [
+    { name: 'Chess', level: Math.floor(chessHrs / 20) + 1, hours_spent: chessHrs, target_hours: 20.0 },
+    { name: 'Coding', level: Math.floor(codingHrs / 20) + 1, hours_spent: codingHrs, target_hours: 20.0 },
+    { name: 'Communication', level: Math.floor(commHrs / 20) + 1, hours_spent: commHrs, target_hours: 20.0 },
+    { name: 'Reading', level: Math.floor(readingHrs / 20) + 1, hours_spent: readingHrs, target_hours: 20.0 },
+    { name: 'Video Editing', level: Math.floor(videoHrs / 20) + 1, hours_spent: videoHrs, target_hours: 20.0 },
+    { name: 'Singing', level: Math.floor(singingHrs / 20) + 1, hours_spent: singingHrs, target_hours: 20.0 }
+  ];
+
+  // Collect Step 3: First Milestone
+  const msSkill = document.getElementById('onboard-ms-skill').value;
+  const msText = document.getElementById('onboard-ms-text').value.trim();
+  const msDate = document.getElementById('onboard-ms-date').value || null;
+
+  const initialMilestones = [];
+  if (msText) {
+    initialMilestones.push({
+      skill_name: msSkill,
+      milestone_text: msText,
+      target_date: msDate,
+      completed: false
+    });
+  }
+
+  // Initial practice log
+  const initialLogs = [];
+  const todayStr = new Date().toLocaleDateString('en-CA');
+
+  // Create virtual logs for initial hours setup to display in growth charts
+  initialSkills.forEach(s => {
+    if (s.hours_spent > 0) {
+      initialLogs.push({
+        skill_name: s.name,
+        date: todayStr,
+        duration: s.hours_spent,
+        activity: 'Initial baseline hours configured during onboarding.',
+        notes: 'Pre-existing experience set.'
+      });
+    }
+  });
+
+  updateSyncUI('syncing', 'Saving baseline progress...');
+
+  try {
+    if (state.isSupabaseConnected) {
+      // 1. Upsert Skills
+      for (let s of initialSkills) {
+        const { error } = await supabaseClient
+          .from('skills')
+          .upsert([s], { onConflict: 'name' });
+        if (error) throw error;
+      }
+
+      // 2. Insert Milestones
+      if (initialMilestones.length > 0) {
+        const { error } = await supabaseClient.from('skill_milestones').insert(initialMilestones);
+        if (error) throw error;
+      }
+
+      // 3. Insert initial logs
+      if (initialLogs.length > 0) {
+        const { error } = await supabaseClient.from('skill_logs').insert(initialLogs);
+        if (error) throw error;
+      }
+
+      showToast('Onboarding progress saved to Supabase.', 'success');
+    } else {
+      // Local Sandbox Save
+      state.skills = initialSkills;
+      state.milestones = initialMilestones;
+      state.logs = initialLogs;
+      saveToLocalStorageOnly();
+      showToast('Baseline stats stored locally (Sandbox).', 'success');
+    }
+
+    localStorage.setItem('skills_onboarding_completed', 'true');
+    document.getElementById('onboarding-dialog').close();
+
+    await loadData();
+  } catch (err) {
+    console.error('Onboarding setup failure:', err);
+    showToast('Failed to complete onboarding: ' + err.message, 'error');
+  }
+};
+
+// ----------------------------------------------------
+// 9. Helpers & Text Formatters
+// ----------------------------------------------------
+function GOAL_CONFIG(skillName) {
+  const defaults = { icon: 'others' };
+  if (skillName === 'Chess') return { icon: 'Chess' };
+  if (skillName === 'Coding') return { icon: 'Coding' };
+  if (skillName === 'Communication') return { icon: 'Communication' };
+  if (skillName === 'Reading') return { icon: 'Reading' };
+  if (skillName === 'Video Editing') return { icon: 'Video Editing' };
+  if (skillName === 'Singing') return { icon: 'Singing' };
+  return defaults;
+}
+
+function getIconHTML(iconName, extraClasses = '') {
+  const iconClass = SVG_ICONS[iconName] || 'fa-solid fa-graduation-cap';
+  return `<i class="${iconClass} ${extraClasses}"></i>`;
+}
+
+function formatDateStr(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function formatDateStrShort(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short'
+    });
+  }
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+
+  let iconName = 'info';
+  if (type === 'success') iconName = 'check';
+  if (type === 'error') iconName = 'alert';
+
+  toast.innerHTML = `${getIconHTML(iconName)} <span>${escapeHtml(message)}</span>`;
+  container.appendChild(toast);
+
+  // Auto-remove animation trigger
+  setTimeout(() => {
+    toast.style.animation = 'slide-in-toast 0.3s reverse forwards';
+    toast.addEventListener('animationend', () => toast.remove());
+  }, 3200);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+</script>
 </body>
 
 </html>
