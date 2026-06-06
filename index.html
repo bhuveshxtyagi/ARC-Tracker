@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="ARC Unified Tracker Portal - A premium, secure entry point for personal Finance, Fit Health, and LevelUp Skills trackers.">
+  <title>ARC Personal Dashboard Portal</title>
+
+  <!-- Custom CSS stylesheet -->
+  <link rel="stylesheet" href="index.css">
+
+  <!-- FontAwesome for clean vector icons (strictly no emojis) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- External JS Assets (Chart.js & Supabase Client API) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="dark-theme">
+
+  <!-- 1. Lock Screen Authenticator Gate -->
+  <div id="lock-screen">
+    <div class="lock-card glass-card">
+      <div class="lock-logo" aria-hidden="true">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h2>Secure Personal Portal</h2>
+      <p>Enter your passcode to unlock your trackers</p>
+
+      <div class="form-group">
+        <label for="passcode-input">Passcode</label>
+        <div class="password-input-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="passcode-input" class="input-field" placeholder="••••••••••••" autocomplete="current-password" autofocus>
+        </div>
+        <div id="auth-error" class="auth-error">Incorrect passcode. Please try again.</div>
+      </div>
+
+      <button id="unlock-btn" class="btn-unlock">
+        <i class="fa-solid fa-key"></i> Unlock Dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. Consolidated Dashboard Interface -->
+  <div id="app-container" class="app-container">
+
+    <!-- Global App Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">
+          <i class="fa-solid fa-cubes"></i>
+        </div>
+        <div class="brand-name">
+          <h1>ARC Personal Portal</h1>
+          <p>Unified Health, Wealth & Skills Dashboard</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="sync-status" id="sync-status-indicator">
+          <span class="status-dot" id="sync-status-dot"></span>
+          <span id="sync-status-text">Detecting Connection...</span>
+        </div>
+
+        <button class="btn-icon" id="theme-toggle" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
+          <i class="fa-solid fa-sun" id="theme-icon-sun"></i>
+          <i class="fa-solid fa-moon" id="theme-icon-moon"></i>
+        </button>
+
+        <button class="btn-icon" id="btn-logout" title="Lock & Logout" aria-label="Lock and Logout">
+          <i class="fa-solid fa-power-off"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Trackers Summary & Launch Grid -->
+    <main>
+      <div class="tracker-grid">
+        
+        <!-- Finance Card -->
+        <div class="tracker-card glass-card finance">
+          <span class="tracker-badge">Finance Tracker</span>
+          <div class="tracker-icon-box">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <h2>FinSight Wealth</h2>
+          <p class="tracker-desc">Net worth allocation, asset tracking, cash balances, and budget limit enforcement.</p>
+          
+          <div class="tracker-summary-stats">
+            <div class="tracker-stat-row">
+              <span>Net Worth:</span>
+              <span id="fin-networth">₹0</span>
+            </div>
+            <div class="tracker-stat-row">
+              <span>Asset Value:</span>
+              <span id="fin-assets">₹0</span>
+            </div>
+            <div class="tracker-stat-row">
+              <span>Ledger Balance:</span>
+              <span id="fin-balance">₹0</span>
+            </div>
+          </div>
+
+          <a href="./finance/finance.html" class="btn-launch">
+            <i class="fa-solid fa-chart-line"></i> Launch FinSight
+          </a>
+        </div>
+
+        <!-- Health Card -->
+        <div class="tracker-card glass-card health">
+          <span class="tracker-badge">Health Tracker</span>
+          <div class="tracker-icon-box">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <h2>ARC Fit Health</h2>
+          <p class="tracker-desc">Step counts, caloric balance targets, sleep logs, hydration history, and biometrics.</p>
+          
+          <div class="tracker-summary-stats">
+            <div class="tracker-stat-row">
+              <span>Steps (Today):</span>
+              <span id="health-steps">0 / 0</span>
+            </div>
+            <div class="tracker-stat-row">
+              <span>Water Intake:</span>
+              <span id="health-water">0 ml / 0 ml</span>
+            </div>
+            <div class="tracker-stat-row">
+              <span>Calories:</span>
+              <span id="health-calories">0 / 0</span>
+            </div>
+          </div>
+
+          <a href="./health/health.html" class="btn-launch">
+            <i class="fa-solid fa-gauge-high"></i> Launch ARC Fit
+          </a>
+        </div>
+
+        <!-- Skills Card -->
+        <div class="tracker-card glass-card skills">
+          <span class="tracker-badge">Skills Tracker</span>
+          <div class="tracker-icon-box">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <h2>LevelUp Skills</h2>
+          <p class="tracker-desc">Practice progress, level advancement calculators, activity logs, and learning targets.</p>
+          
+          <div class="tracker-summary-stats">
+            <div class="tracker-stat-row">
+              <span>Total Hours:</span>
+              <span id="skills-hours">0.0 hrs</span>
+            </div>
+            <div class="tracker-stat-row">
+              <span>Highest Level:</span>
+              <span id="skills-highest">0</span>
+            </div>
+            <div class="tracker-stat-row">
+              <span>Milestones:</span>
+              <span id="skills-milestones">0 active</span>
+            </div>
+          </div>
+
+          <a href="./skills/skills.html" class="btn-launch">
+            <i class="fa-solid fa-trophy"></i> Launch LevelUp
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Overview Charts Section -->
+      <div class="portal-dashboard-section">
+        
+        <!-- Left: Consolidated Asset Allocation (Visual Graph) -->
+        <div class="dashboard-card glass-card">
+          <h3><i class="fa-solid fa-pie-chart" style="color: var(--color-finance);"></i> Consolidated Wealth Distribution</h3>
+          <div class="chart-wrapper">
+            <canvas id="assetsAllocationChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Right: Skills Levels & Hours Breakdown -->
+        <div class="dashboard-card glass-card">
+          <h3><i class="fa-solid fa-chart-bar" style="color: var(--color-skills);"></i> Skills Hours & Progress</h3>
+          <div class="mini-list" id="skills-mini-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer info -->
+    <footer class="portal-footer">
+      <p>ARC Unified Security Portal &bull; Encrypted Session Sync</p>
+    </footer>
+
+  </div>
+
+  <!-- Unified JS Script -->
+  <script src="index.js"></script>
+</body>
+
+</html>
