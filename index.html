@@ -9,7 +9,966 @@
   <title>ARC Personal Dashboard Portal</title>
 
   <!-- Custom CSS stylesheet -->
-  <link rel="stylesheet" href="index.css">
+  <style>
+/* Trackers Portal - Premium CSS Design System */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Default Dark Theme Variables */
+  --bg-dark: #080c14;
+  --bg-card: rgba(15, 23, 42, 0.65);
+  --bg-card-hover: rgba(15, 23, 42, 0.85);
+  --bg-input: rgba(30, 41, 59, 0.5);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Accent Colors */
+  --color-primary: #6366f1; /* Indigo */
+  --color-primary-hover: #4f46e5;
+  --color-primary-glow: rgba(99, 102, 241, 0.15);
+  
+  --color-finance: #10b981; /* Emerald */
+  --color-finance-bg: rgba(16, 185, 129, 0.1);
+  --color-finance-glow: rgba(16, 185, 129, 0.15);
+  
+  --color-health: #ef4444; /* Red/Rose */
+  --color-health-bg: rgba(239, 68, 68, 0.1);
+  --color-health-glow: rgba(239, 68, 68, 0.15);
+
+  --color-skills: #8b5cf6; /* Violet */
+  --color-skills-bg: rgba(139, 92, 246, 0.1);
+  --color-skills-glow: rgba(139, 92, 246, 0.15);
+  
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-out;
+  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 1px 0 rgba(255, 255, 255, 0.05) inset;
+  --blur-glass: 16px;
+
+  --theme-transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Light Theme Variables overrides */
+body.light-theme {
+  --bg-dark: #f3f4f6; /* Soft gray */
+  --bg-card: rgba(255, 255, 255, 0.75);
+  --bg-card-hover: rgba(255, 255, 255, 0.9);
+  --bg-input: #ffffff;
+  --border-color: rgba(15, 23, 42, 0.08);
+  --border-color-hover: rgba(15, 23, 42, 0.18);
+  --text-primary: #0f172a; /* Slate */
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --color-primary-glow: rgba(99, 102, 241, 0.08);
+  --color-finance-glow: rgba(16, 185, 129, 0.08);
+  --color-health-glow: rgba(239, 68, 68, 0.08);
+  --color-skills-glow: rgba(139, 92, 246, 0.08);
+  --shadow-premium: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 1px 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 45%);
+  background-attachment: fixed;
+  transition: var(--theme-transition);
+  display: flex;
+  flex-direction: column;
+}
+
+body.light-theme {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.02) 0%, transparent 45%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Lock Screen View */
+#lock-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #020617; /* Deep midnight space background */
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+  overflow: hidden;
+}
+
+#lock-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Background Design Blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  opacity: 0.18;
+  animation: float-blobs 20s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+}
+
+.blob-2 {
+  bottom: -10%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-skills) 0%, transparent 70%);
+  animation-delay: -10s;
+}
+
+@keyframes float-blobs {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  100% {
+    transform: translate(80px, 60px) scale(1.2) rotate(360deg);
+  }
+}
+
+/* Futuristic Tech Grid Overlay */
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.007) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.007) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center;
+  pointer-events: none;
+}
+
+body.light-theme #lock-screen {
+  background-color: #f8fafc;
+}
+body.light-theme .blob-1 {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+}
+body.light-theme .blob-2 {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+}
+body.light-theme .grid-overlay {
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.005) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.005) 1px, transparent 1px);
+}
+
+/* Premium Lock Card */
+.lock-card {
+  width: 90%;
+  max-width: 420px;
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  background: rgba(10, 15, 30, 0.55);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 
+    0 25px 60px -15px rgba(0, 0, 0, 0.7),
+    0 0 50px -10px rgba(99, 102, 241, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  z-index: 10;
+  position: relative;
+  overflow: hidden;
+}
+
+body.light-theme .lock-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(99, 102, 241, 0.15);
+  box-shadow: 
+    0 25px 60px -15px rgba(15, 23, 42, 0.08),
+    0 0 50px -10px rgba(99, 102, 241, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Security Badge capsule */
+.security-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #10b981;
+}
+
+.secure-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse-secure-dot 1.5s infinite;
+}
+
+@keyframes pulse-secure-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+}
+
+/* Biometric/Futuristic Lock Rings */
+.lock-badge-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.ring-outer {
+  width: 90px;
+  height: 90px;
+  border-top-color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  border-left-color: rgba(99, 102, 241, 0.15);
+  border-right-color: rgba(99, 102, 241, 0.15);
+  animation: spin-clockwise 6s linear infinite;
+}
+
+.ring-inner {
+  width: 70px;
+  height: 70px;
+  border-top-color: var(--color-skills);
+  border-bottom-color: var(--color-skills);
+  border-left-color: rgba(139, 92, 246, 0.15);
+  border-right-color: rgba(139, 92, 246, 0.15);
+  animation: spin-counter 4s linear infinite;
+}
+
+.lock-icon-core {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-skills));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.35rem;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  z-index: 5;
+}
+
+@keyframes spin-clockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-counter {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+.lock-card h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.lock-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  color: var(--text-secondary);
+  margin-left: 0.25rem;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper i {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 0.9rem;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 5;
+}
+
+.toggle-password-btn:hover {
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.toggle-password-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+body.light-theme .toggle-password-btn:hover {
+  color: var(--color-primary);
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.18);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.9rem 2.85rem;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  outline: none;
+  transition: var(--transition-smooth);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+body.light-theme .input-field {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.input-field:focus {
+  border-color: var(--color-primary);
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow: 
+    0 0 20px rgba(99, 102, 241, 0.25),
+    inset 0 1px 2px rgba(0,0,0,0.2);
+}
+
+body.light-theme .input-field:focus {
+  background: #ffffff;
+  box-shadow: 
+    0 0 20px rgba(99, 102, 241, 0.15),
+    inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-unlock {
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-skills));
+  color: #ffffff;
+  padding: 0.95rem 1.75rem;
+  font-family: var(--font-main);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* High-end Shine Reflect sweep animation on hover */
+.btn-unlock::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: skewX(-25deg);
+  transition: 0.75s;
+}
+
+.btn-unlock:hover::after {
+  left: 140%;
+  transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-unlock:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(99, 102, 241, 0.55);
+  filter: brightness(1.15);
+}
+
+.btn-unlock:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.auth-error {
+  color: var(--color-health);
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  display: none;
+  font-weight: 500;
+  text-align: left;
+  margin-left: 0.25rem;
+}
+
+/* Shake Animation on Wrong Code entry */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75% { transform: translateX(-8px); }
+  30%, 60%, 90% { transform: translateX(8px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+  border-color: var(--color-health) !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Glassmorphism Card Utility */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-premium);
+  transition: var(--theme-transition);
+}
+
+.glass-card:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+}
+
+/* App Containers */
+.app-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.app-container.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header styling */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-skills));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  color: #ffffff;
+  font-size: 1.25rem;
+}
+
+.brand-name h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-name p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.btn-icon:hover {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+}
+
+/* Tracker Grid */
+.tracker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.tracker-card {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.tracker-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tracker-card.finance .tracker-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-finance);
+}
+
+.tracker-card.health .tracker-badge {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-health);
+}
+
+.tracker-card.skills .tracker-badge {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--color-skills);
+}
+
+.tracker-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tracker-card.finance .tracker-icon-box {
+  background: var(--color-finance-glow);
+  color: var(--color-finance);
+}
+
+.tracker-card.health .tracker-icon-box {
+  background: var(--color-health-glow);
+  color: var(--color-health);
+}
+
+.tracker-card.skills .tracker-icon-box {
+  background: var(--color-skills-glow);
+  color: var(--color-skills);
+}
+
+.tracker-card h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tracker-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.tracker-summary-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.tracker-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.tracker-stat-row span:first-child {
+  color: var(--text-secondary);
+}
+
+.tracker-stat-row span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.btn-launch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+}
+
+.tracker-card.finance .btn-launch {
+  background: var(--color-finance);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--color-finance-glow);
+}
+.tracker-card.finance .btn-launch:hover {
+  background: #0d9668;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--color-finance-glow);
+}
+
+.tracker-card.health .btn-launch {
+  background: var(--color-health);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--color-health-glow);
+}
+.tracker-card.health .btn-launch:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--color-health-glow);
+}
+
+.tracker-card.skills .btn-launch {
+  background: var(--color-skills);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--color-skills-glow);
+}
+.tracker-card.skills .btn-launch:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--color-skills-glow);
+}
+
+/* Analytics & Overview Dashboard Section */
+.portal-dashboard-section {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-card {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 320px;
+}
+
+/* Skills list view inside dashboard card */
+.mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow-y: auto;
+  max-height: 320px;
+  padding-right: 0.25rem;
+}
+
+.mini-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(148, 163, 184, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.mini-list-item:hover {
+  background: rgba(148, 163, 184, 0.06);
+  border-color: var(--border-color-hover);
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.item-icon.active-skill {
+  background: var(--color-skills-glow);
+  color: var(--color-skills);
+}
+
+.item-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.item-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.item-right {
+  text-align: right;
+}
+
+.item-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Mode Indicators styling */
+.empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.empty-placeholder i {
+  font-size: 2rem;
+}
+
+/* Footer info */
+.portal-footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 2rem 0;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Theme Switcher Toggle styling */
+#theme-toggle {
+  background: transparent;
+  border: none;
+}
+#theme-icon-sun {
+  display: none;
+}
+body.light-theme #theme-icon-sun {
+  display: block;
+}
+body.light-theme #theme-icon-moon {
+  display: none;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .tracker-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .portal-dashboard-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 12px; /* Reduces all REM elements globally by 25% */
+  }
+  .tracker-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  /* Scale down lock screen parameters on mobile */
+  .lock-card {
+    max-width: 320px;
+    padding: 2.25rem 1.75rem;
+  }
+  .lock-badge-wrapper {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1.25rem;
+  }
+  .ring-outer {
+    width: 70px;
+    height: 70px;
+  }
+  .ring-inner {
+    width: 54px;
+    height: 54px;
+  }
+  .lock-icon-core {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+}
+  </style>
 
   <!-- FontAwesome for clean vector icons (strictly no emojis) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -218,7 +1177,597 @@
   </div>
 
   <!-- Unified JS Script -->
-  <script src="index.js"></script>
+  <script>
+// Trackers Unified Portal - Core Logic & Summary Dashboard
+
+// Default Supabase Connection Details
+const DEFAULT_URL = 'https://ajwezyvnkbuxmkgqpcjs.supabase.co';
+const DEFAULT_PUBLISHABLE_KEY = 'sb_publishable_WnOcdyZp-2dgTz1O5pitzg_dLqK29mj';
+
+// Application State
+const state = {
+  // Finance Data
+  transactions: [],
+  assets: [],
+  // Health Data
+  healthLogs: [],
+  healthGoals: [],
+  // Skills Data
+  skills: [],
+  skillsLogs: [],
+  skillsMilestones: [],
+  // Connection state
+  isSupabaseConnected: false
+};
+
+// Chart.js references
+let assetsChartInstance = null;
+let skillsChartInstance = null;
+
+// DOM Load Handler
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  setupAuth();
+  
+  // Setup theme toggle listener
+  document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+  
+  // Setup logout listener
+  document.getElementById('btn-logout').addEventListener('click', logout);
+  
+  // If already authenticated, load dashboard
+  if (sessionStorage.getItem('tracker_auth_session') === 'true') {
+    revealDashboard();
+  }
+});
+
+// Cryptographic hashing using native browser Web Crypto API
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+// Get initialized Supabase client dynamically based on user/system config
+function getSupabaseClient() {
+  const dbUrl = localStorage.getItem('supabase_url') || localStorage.getItem('health_supabase_url') || localStorage.getItem('skills_supabase_url') || DEFAULT_URL;
+  const dbKey = localStorage.getItem('supabase_key') || localStorage.getItem('health_supabase_key') || localStorage.getItem('skills_supabase_key') || DEFAULT_PUBLISHABLE_KEY;
+  if (typeof supabase !== 'undefined' && dbUrl && dbKey) {
+    try {
+      return supabase.createClient(dbUrl, dbKey);
+    } catch (e) {
+      console.warn('Failed to initialize Supabase client:', e);
+    }
+  }
+  return null;
+}
+
+// ----------------------------------------------------
+// 1. Password Protection & Authentication
+// ----------------------------------------------------
+function setupAuth() {
+  const lockScreen = document.getElementById('lock-screen');
+  const passwordInput = document.getElementById('passcode-input');
+  const unlockBtn = document.getElementById('unlock-btn');
+  const authError = document.getElementById('auth-error');
+  const togglePasswordBtn = document.getElementById('toggle-password');
+
+  const attemptUnlock = async () => {
+    const entered = passwordInput.value.trim();
+    if (!entered) return;
+
+    // Show visual loading state on unlock button
+    const originalBtnHTML = unlockBtn.innerHTML;
+    unlockBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+    unlockBtn.disabled = true;
+
+    const enteredHash = await sha256(entered);
+    let authenticated = false;
+
+    const client = getSupabaseClient();
+    if (client) {
+      try {
+        // Query password hash from settings table in Supabase
+        const { data, error } = await client
+          .from('portal_settings')
+          .select('value')
+          .eq('key', 'portal_passcode_hash')
+          .maybeSingle();
+
+        if (!error && data && data.value) {
+          if (enteredHash === data.value) {
+            authenticated = true;
+          }
+        } else {
+          // If query returns empty or table doesn't exist, fall back to local default hashes
+          if (enteredHash === '5edb92356119e9167ba311a3439e78aee8bcf4050870eafb0d4221c42449b5ab' || 
+              enteredHash === '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918') {
+            authenticated = true;
+          }
+        }
+      } catch (e) {
+        console.warn('Supabase auth query failed, falling back to local verification:', e);
+        if (enteredHash === '5edb92356119e9167ba311a3439e78aee8bcf4050870eafb0d4221c42449b5ab' || 
+            enteredHash === '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918') {
+          authenticated = true;
+        }
+      }
+    } else {
+      // Local/Sandbox mode verification fallback
+      if (enteredHash === '5edb92356119e9167ba311a3439e78aee8bcf4050870eafb0d4221c42449b5ab' || 
+          enteredHash === '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918') {
+        authenticated = true;
+      }
+    }
+
+    // Restore button state
+    unlockBtn.innerHTML = originalBtnHTML;
+    unlockBtn.disabled = false;
+
+    if (authenticated) {
+      sessionStorage.setItem('tracker_auth_session', 'true');
+      authError.style.display = 'none';
+      passwordInput.value = '';
+      revealDashboard();
+    } else {
+      authError.textContent = 'Incorrect passcode. Please try again.';
+      authError.style.display = 'block';
+      passwordInput.classList.add('shake');
+      setTimeout(() => passwordInput.classList.remove('shake'), 400);
+    }
+  };
+
+  // Toggle password visibility
+  if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      const icon = togglePasswordBtn.querySelector('i');
+      if (type === 'text') {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+  }
+
+  // Click/Enter handlers
+  unlockBtn.addEventListener('click', attemptUnlock);
+  passwordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      attemptUnlock();
+    }
+  });
+}
+
+function revealDashboard() {
+  const lockScreen = document.getElementById('lock-screen');
+  const appContainer = document.getElementById('app-container');
+
+  lockScreen.classList.add('hidden');
+  appContainer.classList.add('revealed');
+
+  // Load portal data and initialize graphs
+  loadPortalData();
+}
+
+function logout() {
+  sessionStorage.removeItem('tracker_auth_session');
+  window.location.reload();
+}
+
+// ----------------------------------------------------
+// 2. Cohesive Theme Management
+// ----------------------------------------------------
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  const body = document.body;
+
+  if (savedTheme === 'light') {
+    body.classList.add('light-theme');
+  } else {
+    body.classList.remove('light-theme');
+  }
+}
+
+function toggleTheme() {
+  const body = document.body;
+  const isLight = body.classList.toggle('light-theme');
+  const newTheme = isLight ? 'light' : 'dark';
+
+  // Keep all trackers in sync with the selected theme
+  localStorage.setItem('theme', newTheme);
+  localStorage.setItem('health_theme', newTheme);
+  localStorage.setItem('skills_theme', newTheme);
+}
+
+// ----------------------------------------------------
+// 3. Consolidated Data Sync (Supabase + local storage Fallback)
+// ----------------------------------------------------
+async function loadPortalData() {
+  const supabaseClient = getSupabaseClient();
+
+  // 2. Fetch Finance Data
+  if (supabaseClient) {
+    try {
+      const { data: txs, error: txError } = await supabaseClient.from('transactions').select('*');
+      if (txError) throw txError;
+      state.transactions = txs || [];
+      
+      const { data: asts, error: astError } = await supabaseClient.from('assets').select('*');
+      if (astError) throw astError;
+      state.assets = asts || [];
+      
+      state.isSupabaseConnected = true;
+    } catch (e) {
+      console.warn('Supabase Finance fetch failed, using local storage:', e);
+      loadFinanceLocal();
+    }
+  } else {
+    loadFinanceLocal();
+  }
+
+  // 3. Fetch Health Data
+  if (supabaseClient) {
+    try {
+      const { data: hLogs, error: hlError } = await supabaseClient.from('health_logs').select('*');
+      if (hlError) throw hlError;
+      state.healthLogs = hLogs || [];
+
+      const { data: hGoals, error: hgError } = await supabaseClient.from('health_goals').select('*');
+      if (hgError) throw hgError;
+      state.healthGoals = hGoals || [];
+    } catch (e) {
+      console.warn('Supabase Health fetch failed, using local storage:', e);
+      loadHealthLocal();
+    }
+  } else {
+    loadHealthLocal();
+  }
+
+  // 4. Fetch Skills Data
+  if (supabaseClient) {
+    try {
+      const { data: sks, error: skError } = await supabaseClient.from('skills').select('*');
+      if (skError) throw skError;
+      state.skills = sks || [];
+
+      const { data: sLogs, error: slError } = await supabaseClient.from('skill_logs').select('*');
+      if (slError) throw slError;
+      state.skillsLogs = sLogs || [];
+
+      const { data: sMs, error: smError } = await supabaseClient.from('skill_milestones').select('*');
+      if (smError) throw smError;
+      state.skillsMilestones = sMs || [];
+    } catch (e) {
+      console.warn('Supabase Skills fetch failed, using local storage:', e);
+      loadSkillsLocal();
+    }
+  } else {
+    loadSkillsLocal();
+  }
+
+  // Update DOM components with consolidated summary data
+  updateDashboardKPIs();
+  
+  // Render charts
+  renderAggregateCharts();
+}
+
+function loadFinanceLocal() {
+  const txs = localStorage.getItem('local_transactions');
+  state.transactions = txs ? JSON.parse(txs) : [];
+
+  const asts = localStorage.getItem('local_assets');
+  state.assets = asts ? JSON.parse(asts) : [];
+}
+
+function loadHealthLocal() {
+  const hLogs = localStorage.getItem('local_health_logs');
+  state.healthLogs = hLogs ? JSON.parse(hLogs) : [];
+
+  const hGoals = localStorage.getItem('local_health_goals');
+  state.healthGoals = hGoals ? JSON.parse(hGoals) : [];
+}
+
+function loadSkillsLocal() {
+  const sks = localStorage.getItem('local_skills');
+  state.skills = sks ? JSON.parse(sks) : getDemoSkills();
+
+  const sLogs = localStorage.getItem('local_skill_logs');
+  state.skillsLogs = sLogs ? JSON.parse(sLogs) : [];
+
+  const sMs = localStorage.getItem('local_skill_milestones');
+  state.skillsMilestones = sMs ? JSON.parse(sMs) : [];
+}
+
+function getDemoSkills() {
+  return [
+    { name: 'Chess', level: 1, hours_spent: 0, target_hours: 20 },
+    { name: 'Coding', level: 1, hours_spent: 0, target_hours: 20 },
+    { name: 'Communication', level: 1, hours_spent: 0, target_hours: 20 },
+    { name: 'Reading', level: 1, hours_spent: 0, target_hours: 20 },
+    { name: 'Video Editing', level: 1, hours_spent: 0, target_hours: 20 },
+    { name: 'Singing', level: 1, hours_spent: 0, target_hours: 20 }
+  ];
+}
+
+// ----------------------------------------------------
+// 4. Calculations & KPI Updates
+// ----------------------------------------------------
+function updateDashboardKPIs() {
+  // --- 4.1 Finance Calculations ---
+  let allTimeBalance = 0;
+  state.transactions.forEach(t => {
+    const val = parseFloat(t.amount) || 0;
+    if (t.type === 'income') {
+      allTimeBalance += val;
+    } else {
+      allTimeBalance -= val;
+    }
+  });
+
+  let totalAssets = 0;
+  state.assets.forEach(a => {
+    totalAssets += parseFloat(a.value) || 0;
+  });
+
+  const netWorth = totalAssets + allTimeBalance;
+
+  // Format currency helper (Rupees)
+  const formatRupees = (val) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(val);
+  };
+
+  document.getElementById('fin-networth').textContent = formatRupees(netWorth);
+  document.getElementById('fin-assets').textContent = formatRupees(totalAssets);
+  document.getElementById('fin-balance').textContent = formatRupees(allTimeBalance);
+
+  // --- 4.2 Health Calculations ---
+  // Find latest log (usually today's) or use default zero values
+  const todayStr = getYYYYMMDD();
+  let todayLog = state.healthLogs.find(l => l.date === todayStr);
+  
+  if (!todayLog && state.healthLogs.length > 0) {
+    // Fall back to the most recent log in sorted date order
+    const sorted = [...state.healthLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+    todayLog = sorted[0];
+  }
+
+  const stepsVal = todayLog ? (parseInt(todayLog.steps) || 0) : 0;
+  const waterVal = todayLog ? (parseInt(todayLog.water_intake) || 0) : 0;
+  const calVal = todayLog ? (parseInt(todayLog.calories_consumed) || 0) : 0;
+
+  // Find active goals
+  const stepGoal = state.healthGoals.find(g => g.metric === 'steps')?.target_value || 10000;
+  const waterGoal = state.healthGoals.find(g => g.metric === 'water_intake')?.target_value || 3000;
+  const calGoal = state.healthGoals.find(g => g.metric === 'calories_consumed')?.target_value || 2500;
+
+  document.getElementById('health-steps').textContent = `${stepsVal.toLocaleString()} / ${parseInt(stepGoal).toLocaleString()}`;
+  document.getElementById('health-water').textContent = `${waterVal} ml / ${waterGoal} ml`;
+  document.getElementById('health-calories').textContent = `${calVal} kcal / ${calGoal} kcal`;
+
+  // --- 4.3 Skills Calculations ---
+  let totalSkillsHours = 0;
+  let highestSkill = 'None';
+  let maxLevel = 0;
+
+  state.skills.forEach(s => {
+    const hrs = parseFloat(s.hours_spent) || 0;
+    totalSkillsHours += hrs;
+    const lvl = parseInt(s.level) || 1;
+    if (lvl > maxLevel) {
+      maxLevel = lvl;
+      highestSkill = s.name;
+    }
+  });
+
+  const pendingMilestones = state.skillsMilestones.filter(m => !m.completed).length;
+
+  document.getElementById('skills-hours').textContent = `${totalSkillsHours.toFixed(1)} hrs`;
+  document.getElementById('skills-highest').textContent = highestSkill === 'None' ? '0' : `${highestSkill} (Lvl ${maxLevel})`;
+  document.getElementById('skills-milestones').textContent = `${pendingMilestones} active`;
+
+  // --- 4.4 Render Skills list inside list container ---
+  const skillsListEl = document.getElementById('skills-mini-list');
+  skillsListEl.innerHTML = '';
+  
+  const skillIcons = {
+    'Chess': 'fa-chess-knight',
+    'Coding': 'fa-code',
+    'Communication': 'fa-comments',
+    'Reading': 'fa-book-open',
+    'Video Editing': 'fa-film',
+    'Singing': 'fa-music'
+  };
+
+  state.skills.forEach(s => {
+    const hours = parseFloat(s.hours_spent) || 0;
+    const progressPercent = Math.min(((hours % s.target_hours) / s.target_hours) * 100, 100);
+    const icon = skillIcons[s.name] || 'fa-graduation-cap';
+    
+    const div = document.createElement('div');
+    div.className = 'mini-list-item';
+    div.innerHTML = `
+      <div class="item-left">
+        <div class="item-icon active-skill">
+          <i class="fa-solid ${icon}"></i>
+        </div>
+        <div>
+          <div class="item-title">${s.name}</div>
+          <div class="item-meta">Lvl ${s.level} • Next level progress</div>
+        </div>
+      </div>
+      <div class="item-right">
+        <div class="item-value">${hours.toFixed(1)} hrs</div>
+        <div class="item-meta">${Math.round(progressPercent)}%</div>
+      </div>
+    `;
+    skillsListEl.appendChild(div);
+  });
+
+  // Database Connection Sync status indicator
+  const syncStatusDot = document.getElementById('sync-status-dot');
+  const syncStatusText = document.getElementById('sync-status-text');
+  
+  if (state.isSupabaseConnected) {
+    syncStatusDot.className = 'status-dot connected';
+    syncStatusText.textContent = 'Cloud Connected';
+  } else {
+    syncStatusDot.className = 'status-dot';
+    syncStatusText.textContent = 'Sandbox Mode (Local)';
+  }
+}
+
+// Helper: Formats dates consistently as YYYY-MM-DD
+function getYYYYMMDD() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// ----------------------------------------------------
+// 5. Visual Summary Charts (Chart.js)
+// ----------------------------------------------------
+function renderAggregateCharts() {
+  if (typeof Chart === 'undefined') return;
+
+  // --- 5.1 Asset Allocation Chart ---
+  const assetCtx = document.getElementById('assetsAllocationChart');
+  if (assetCtx) {
+    // Aggregate asset values by category
+    const categoriesSum = {};
+    state.assets.forEach(a => {
+      const cat = a.category || 'others';
+      categoriesSum[cat] = (categoriesSum[cat] || 0) + (parseFloat(a.value) || 0);
+    });
+
+    const assetLabels = Object.keys(categoriesSum).map(c => c.toUpperCase().replace('_', ' '));
+    const assetData = Object.values(categoriesSum);
+
+    const assetColors = {
+      'CASH': '#22c55e',
+      'BANK': '#3b82f6',
+      'STOCKS': '#8b5cf6',
+      'CRYPTO': '#f59e0b',
+      'REAL ESTATE': '#ec4899',
+      'MUTUAL FUNDS': '#20b8a6',
+      'OTHERS': '#94a3b8'
+    };
+    const backgroundColors = assetLabels.map(l => assetColors[l] || '#6366f1');
+
+    if (assetsChartInstance) assetsChartInstance.destroy();
+
+    if (assetData.length === 0) {
+      // Show empty state inside canvas container
+      const container = assetCtx.parentElement;
+      container.innerHTML = `
+        <div class="empty-placeholder">
+          <i class="fa-solid fa-chart-pie"></i>
+          <div>No asset data configured yet</div>
+        </div>
+        <canvas id="assetsAllocationChart" style="display:none;"></canvas>
+      `;
+    } else {
+      // Re-create canvas if replaced by placeholder
+      if (assetCtx.style.display === 'none') {
+        const parent = assetCtx.parentElement;
+        parent.innerHTML = '<canvas id="assetsAllocationChart"></canvas>';
+        renderAggregateCharts();
+        return;
+      }
+      
+      const isDark = !document.body.classList.contains('light-theme');
+      
+      assetsChartInstance = new Chart(assetCtx, {
+        type: 'doughnut',
+        data: {
+          labels: assetLabels,
+          datasets: [{
+            data: assetData,
+            backgroundColor: backgroundColors,
+            borderColor: isDark ? '#1e293b' : '#ffffff',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: isDark ? '#94a3b8' : '#475569',
+                font: { family: 'Outfit', size: 11 }
+              }
+            }
+          },
+          cutout: '65%'
+        }
+      });
+    }
+  }
+
+  // --- 5.2 Skills Distribution Horizontal Bar Chart ---
+  const skillsCtx = document.getElementById('skillsBarChart');
+  if (skillsCtx) {
+    const labels = state.skills.map(s => s.name);
+    const hours = state.skills.map(s => parseFloat(s.hours_spent) || 0);
+
+    if (skillsChartInstance) skillsChartInstance.destroy();
+
+    const isDark = !document.body.classList.contains('light-theme');
+
+    skillsChartInstance = new Chart(skillsCtx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Hours Spent',
+          data: hours,
+          backgroundColor: '#8b5cf6',
+          borderRadius: 4,
+          maxBarThickness: 16
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            grid: { color: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(15, 23, 42, 0.05)' },
+            ticks: {
+              color: isDark ? '#94a3b8' : '#475569',
+              font: { family: 'Outfit' }
+            }
+          },
+          y: {
+            grid: { display: false },
+            ticks: {
+              color: isDark ? '#f8fafc' : '#0f172a',
+              font: { family: 'Outfit', weight: 500 }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+  </script>
 </body>
 
 </html>
