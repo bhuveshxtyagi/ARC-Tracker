@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    if (sessionStorage.getItem('tracker_auth_session') !== 'true') {
+      window.location.replace('../index.html');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="FinSight - A premium responsive financial tracker with Net Worth asset allocation, real-time Supabase sync, and expense intelligence.">
+  <title>ARC Wealth Dashboard - Premium Asset & Expense Tracker</title>
+
+  <!-- Custom Vanilla CSS -->
+  <link rel="stylesheet" href="finance.css">
+
+  <!-- FontAwesome for clean icons (strictly no emojis) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- External JS Assets (Chart.js & Supabase Client) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="dark-theme"> <!-- Default dark-theme, switchable via JS -->
+
+  <div class="app-container">
+
+    <!-- Global Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div class="brand-name">
+          <h1>ARC</h1>
+          <p>Real-time Wealth Intelligence</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Database Sync Status Indicator -->
+        <div class="sync-status" id="sync-indicator">
+          <span class="status-dot disconnected" id="status-dot"></span>
+          <span id="sync-text">Sandbox Mode</span>
+        </div>
+
+        <!-- Light / Dark Mode Toggle Button -->
+        <button class="btn btn-icon-only" id="theme-toggle" aria-label="Toggle Light/Dark Theme"
+          title="Toggle color theme">
+          <i class="fa-solid fa-sun" id="theme-icon-sun" style="display: none;"></i>
+          <i class="fa-solid fa-moon" id="theme-icon-moon"></i>
+        </button>
+
+        <!-- Database Settings Toggle -->
+        <button class="btn btn-icon-only" onclick="openSetupModal()" id="btn-settings" aria-label="Connection Settings"
+          title="Configure Database Connection">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+        <!-- Add Transaction Trigger -->
+        <button class="btn btn-primary" onclick="openAddTransactionModal()" id="btn-add-tx">
+          <i class="fa-solid fa-plus"></i> Add Transaction
+        </button>
+      </div>
+    </header>
+
+    <!-- Net Worth and Core KPI Metrics Row -->
+    <section class="summary-grid" aria-label="Financial Position KPI Indicators">
+
+      <!-- Net Worth (Sum of Assets) -->
+      <div class="glass-card summary-card networth">
+        <div class="card-header-flex">
+          <span class="card-title">Total Net Worth</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-shield-halved"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-networth">₹0.00</div>
+        <div class="card-meta">Combined holdings value</div>
+      </div>
+
+      <!-- Net Balance (Income - Expense sum) -->
+      <div class="glass-card summary-card balance">
+        <div class="card-header-flex">
+          <span class="card-title">Net Balance</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-wallet"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-balance">₹0.00</div>
+        <div class="card-meta">Cashflow ledger sum</div>
+      </div>
+
+      <!-- Monthly Income -->
+      <div class="glass-card summary-card income">
+        <div class="card-header-flex">
+          <span class="card-title">Monthly Income</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-income">₹0.00</div>
+        <div class="card-meta">Earned this month</div>
+      </div>
+
+      <!-- Monthly Expenses -->
+      <div class="glass-card summary-card expense">
+        <div class="card-header-flex">
+          <span class="card-title">Monthly Expenses</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-expense">₹0.00</div>
+        <div class="card-meta">Spent this month</div>
+      </div>
+
+      <!-- Monthly Savings Rate -->
+      <div class="glass-card summary-card savings">
+        <div class="card-header-flex">
+          <span class="card-title">Savings Rate</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-piggy-bank"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-savings">0.0%</div>
+        <div class="card-meta" id="kpi-savings-meta">Ratio saved this month</div>
+      </div>
+    </section>
+
+    <!-- Assets & Net Worth Distribution Section -->
+    <div class="assets-grid-layout">
+      <!-- Asset Allocation Chart Card -->
+      <section class="glass-card chart-card" aria-label="Asset Allocation Chart">
+        <h3>
+          <i class="fa-solid fa-chart-pie"></i> Asset Allocation Breakdown
+        </h3>
+        <div class="chart-container">
+          <canvas id="assetChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Asset Holdings breakdown -->
+      <section class="glass-card chart-card" aria-label="Holding Portfolios List">
+        <div class="budget-header">
+          <h3>
+            <i class="fa-solid fa-list-check"></i> Diversified Holdings
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="openAssetModal()"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-plus-minus"></i> Manage Assets
+          </button>
+        </div>
+        <div class="assets-list-wrapper" id="assets-list">
+          <!-- Dynamically populated assets list -->
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px;"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Charts & Cashflow Grid -->
+    <div class="charts-grid">
+      <!-- Trend Visualization Card -->
+      <section class="glass-card chart-card" aria-label="Cashflow Monthly Analytics">
+        <h3>
+          <i class="fa-solid fa-chart-column"></i> Monthly Trends (6 Months)
+        </h3>
+        <div class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Expense category distribution -->
+      <section class="glass-card chart-card" aria-label="Monthly Expense Distribution">
+        <h3>
+          <i class="fa-solid fa-chart-pie"></i> Expense Distribution
+        </h3>
+        <div class="chart-container">
+          <canvas id="expenseChart"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Budgets and Advanced Expense Analytics Grid -->
+    <div class="details-row-grid">
+      <!-- Budget Progress Section -->
+      <section class="glass-card budget-card" aria-label="Budgets Overview">
+        <div class="budget-header">
+          <h3>
+            <i class="fa-solid fa-circle-dollar-to-slot"></i> Monthly Budgets
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="openBudgetModal()"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-pen"></i> Set Limits
+          </button>
+        </div>
+        <div class="budget-list" id="budget-list">
+          <div class="shimmer-loader" style="height: 40px; border-radius: 6px; margin-bottom: 10px;"></div>
+          <div class="shimmer-loader" style="height: 40px; border-radius: 6px;"></div>
+        </div>
+      </section>
+
+      <!-- Expense Analytics Section -->
+      <section class="glass-card analytics-card" aria-label="Expense Intelligence Details">
+        <h3>
+          <i class="fa-solid fa-brain"></i> Expense Intelligence
+        </h3>
+        <div class="analytics-content">
+          <!-- Top spending categories list -->
+          <div>
+            <div class="analytics-section-title">Top Expense Categories</div>
+            <div class="top-spent-list" id="top-spent-list">
+              <div class="shimmer-loader" style="height: 20px; border-radius: 4px; margin-bottom: 8px; width: 85%;">
+              </div>
+              <div class="shimmer-loader" style="height: 20px; border-radius: 4px; width: 65%;"></div>
+            </div>
+          </div>
+
+          <!-- Largest single transaction details -->
+          <div>
+            <div class="analytics-section-title">Largest Single Expense (Current Month)</div>
+            <div id="peak-transaction-container">
+              <div class="shimmer-loader" style="height: 60px; border-radius: 6px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Transactions Table Card -->
+    <section class="glass-card transactions-card" aria-label="Transactions Log">
+
+      <div class="table-header">
+        <h3>Transactions Ledger</h3>
+
+        <!-- Filters panel -->
+        <div class="filters-group">
+          <!-- Search input -->
+          <div class="search-wrapper">
+            <span class="search-icon" aria-hidden="true">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="search" id="search-input" class="search-input" placeholder="Search description...">
+          </div>
+
+          <!-- Filter by Category -->
+          <select id="filter-category" class="select-filter" aria-label="Filter Categories">
+            <option value="all">All Categories</option>
+            <optgroup label="Income">
+              <option value="payment">Payment</option>
+              <option value="investment">Investment</option>
+            </optgroup>
+            <optgroup label="Expense">
+              <option value="food">Food & Dining</option>
+              <option value="utilities">Utilities</option>
+              <option value="rent">Rent & Housing</option>
+              <option value="transport">Transport</option>
+              <option value="shopping">Shopping</option>
+              <option value="entertainment">Entertainment</option>
+            </optgroup>
+            <option value="others">Others</option>
+          </select>
+
+          <!-- Filter by Type -->
+          <select id="filter-type" class="select-filter" aria-label="Filter Type">
+            <option value="all">All Types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+
+          <!-- Sort -->
+          <select id="filter-sort" class="select-filter" aria-label="Sort Transactions">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="highest">Highest Amount</option>
+            <option value="lowest">Lowest Amount</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table Scroll wrapper -->
+      <div class="table-wrapper">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 15%">Date</th>
+              <th scope="col" style="width: 45%">Description</th>
+              <th scope="col" style="width: 15%">Category</th>
+              <th scope="col" style="width: 15%; text-align: right">Amount</th>
+              <th scope="col" style="width: 10%; text-align: right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-body">
+            <!-- Dynamically loaded -->
+            <tr>
+              <td colspan="5">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem;">
+                  <div class="shimmer-loader" style="height: 25px; border-radius: 4px; width: 100%;"></div>
+                  <div class="shimmer-loader" style="height: 25px; border-radius: 4px; width: 95%;"></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="pagination-container">
+        <div id="page-info">Showing 0–0 of 0 transactions</div>
+        <div class="pagination-controls">
+          <button class="btn btn-secondary pagination-btn" id="prev-btn" disabled>Prev</button>
+          <button class="btn btn-secondary pagination-btn" id="next-btn" disabled>Next</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL DIALOG OVERLAYS                                     -->
+  <!-- ======================================================== -->
+
+  <!-- Onboarding Wizard Dialog (First run only) -->
+  <dialog id="onboarding-dialog" aria-labelledby="onboarding-modal-title" style="max-width: 600px;">
+    <div class="modal-header">
+      <h2 id="onboarding-modal-title">
+        <i class="fa-solid fa-route" style="color: var(--color-primary);"></i>
+        FinSight Onboarding Setup
+      </h2>
+    </div>
+
+    <div class="onboarding-wizard">
+      <!-- Onboarding Steps indicators -->
+      <div class="onboarding-steps-indicator">
+        <div class="onboarding-step-dot active" id="dot-step-1">1</div>
+        <div class="onboarding-step-dot" id="dot-step-2">2</div>
+        <div class="onboarding-step-dot" id="dot-step-3">3</div>
+      </div>
+
+      <!-- STEP 1: Database configuration -->
+      <div class="onboarding-step-content active" id="onboard-step-1-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-database"></i>
+          <h3>Database Sync Integration</h3>
+          <p>Sync your finances securely in real-time across devices. You can also skip this to run locally in your
+            browser sandbox.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-url">Supabase Project URL</label>
+          <input type="url" id="onboard-url" class="form-control" placeholder="https://your-project-ref.supabase.co"
+            autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="onboard-key">Supabase Publishable Key</label>
+          <input type="text" id="onboard-key" class="form-control" placeholder="sb_publishable_..." autocomplete="off">
+          <span class="form-helper">The client uses Row Level Security (RLS) policies for secure operations.</span>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="skipOnboardingDatabase()">Skip & Run Locally</button>
+          <button type="button" class="btn btn-primary" onclick="nextOnboardingStep(2)">Connect & Next <i
+              class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Initial Diversified Net Worth -->
+      <div class="onboarding-step-content" id="onboard-step-2-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-briefcase"></i>
+          <h3>Asset Net Worth Diversification</h3>
+          <p>Enter your current holdings to calculate your initial net worth asset allocations.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-cash"><i class="fa-solid fa-money-bill-wave" style="color: #22c55e;"></i> Cash in Hand
+              (₹)</label>
+            <input type="number" step="0.01" min="0" id="onboard-cash" class="form-control" placeholder="₹0.00">
+          </div>
+          <div class="form-group">
+            <label for="onboard-bank"><i class="fa-solid fa-building-columns" style="color: #3b82f6;"></i> Bank Balances
+              (₹)</label>
+            <input type="number" step="0.01" min="0" id="onboard-bank" class="form-control" placeholder="₹0.00">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-stocks"><i class="fa-solid fa-chart-line" style="color: #8b5cf6;"></i> Stock Market
+              Investments (₹)</label>
+            <input type="number" step="0.01" min="0" id="onboard-stocks" class="form-control" placeholder="₹0.00">
+          </div>
+          <div class="form-group">
+            <label for="onboard-crypto"><i class="fa-solid fa-coins" style="color: #f59e0b;"></i> Cryptocurrencies
+              (₹)</label>
+            <input type="number" step="0.01" min="0" id="onboard-crypto" class="form-control" placeholder="₹0.00">
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="nextOnboardingStep(1)"><i
+              class="fa-solid fa-arrow-left"></i> Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextOnboardingStep(3)">Next <i
+              class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Initial Budgets -->
+      <div class="onboarding-step-content" id="onboard-step-3-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-circle-dollar-to-slot"></i>
+          <h3>Monthly Spending Budgets</h3>
+          <p>Set optional spending limits for key expense categories to prevent overspending.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-budget-food"><i class="fa-solid fa-bowl-food" style="color: #f59e0b;"></i> Food & Dining
+            Budget Limit (₹)</label>
+          <input type="number" step="0.01" min="0" id="onboard-budget-food" class="form-control" placeholder="No limit">
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-budget-rent"><i class="fa-solid fa-house" style="color: #ec4899;"></i> Rent & Housing
+            Budget Limit (₹)</label>
+          <input type="number" step="0.01" min="0" id="onboard-budget-rent" class="form-control" placeholder="No limit">
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-budget-utilities"><i class="fa-solid fa-bolt" style="color: #3b82f6;"></i> Utilities
+            Budget Limit (₹)</label>
+          <input type="number" step="0.01" min="0" id="onboard-budget-utilities" class="form-control"
+            placeholder="No limit">
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="nextOnboardingStep(2)"><i
+              class="fa-solid fa-arrow-left"></i> Back</button>
+          <button type="button" class="btn btn-primary" onclick="submitOnboarding()">Finish Setup <i
+              class="fa-solid fa-check"></i></button>
+        </div>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- Add/Edit Transaction Modal -->
+  <dialog id="transaction-dialog" closedby="any" aria-labelledby="tx-modal-title">
+    <div class="modal-header">
+      <h2 id="tx-modal-title">
+        <i class="fa-solid fa-wallet" style="color: var(--color-primary);"></i>
+        <span id="modal-t-title">Add Transaction</span>
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="transaction-form" method="dialog">
+      <input type="hidden" id="t-id" name="id">
+
+      <!-- Transaction Description -->
+      <div class="form-group">
+        <label for="t-desc">Description</label>
+        <input type="text" id="t-desc" name="description" class="form-control" placeholder="e.g. Weekly Groceries"
+          required autocomplete="off">
+      </div>
+
+      <div class="form-row">
+        <!-- Transaction Amount -->
+        <div class="form-group">
+          <label for="t-amount">Amount (₹)</label>
+          <input type="number" step="0.01" min="0.01" id="t-amount" name="amount" class="form-control"
+            placeholder="₹0.00" required>
+        </div>
+
+        <!-- Transaction Date -->
+        <div class="form-group">
+          <label for="t-date">Date</label>
+          <input type="date" id="t-date" name="date" class="form-control" required>
+        </div>
+      </div>
+
+      <!-- Transaction Type Radio Group -->
+      <div class="form-group">
+        <label>Transaction Type</label>
+        <div class="radio-group-container">
+          <div class="radio-btn-wrapper">
+            <input type="radio" id="type-expense" name="type" value="expense" checked>
+            <label for="type-expense" class="radio-btn-label expense">
+              <i class="fa-solid fa-arrow-trend-down"></i> Expense
+            </label>
+          </div>
+          <div class="radio-btn-wrapper">
+            <input type="radio" id="type-income" name="type" value="income">
+            <label for="type-income" class="radio-btn-label income">
+              <i class="fa-solid fa-arrow-trend-up"></i> Income
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category dropdown -->
+      <div class="form-group">
+        <label for="t-category">Category</label>
+        <select id="t-category" name="category" class="form-control" required>
+          <!-- Loaded dynamically -->
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary"
+          onclick="document.getElementById('transaction-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Transaction</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Budget Management Modal -->
+  <dialog id="budget-dialog" closedby="any" aria-labelledby="budget-dialog-title">
+    <div class="modal-header">
+      <h2 id="budget-dialog-title">
+        <i class="fa-solid fa-circle-dollar-to-slot" style="color: var(--color-primary);"></i>
+        Manage Monthly Budgets
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="budget-form" method="dialog">
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Set maximum monthly spending limits per expense category. Leave inputs empty to set no limit.
+      </p>
+
+      <!-- Budget Input Rows -->
+      <div id="budget-inputs-container">
+        <!-- Dynamically created inside JS -->
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary"
+          onclick="document.getElementById('budget-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Budget Limits</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Asset Management Modal -->
+  <dialog id="asset-dialog" closedby="any" aria-labelledby="asset-modal-title">
+    <div class="modal-header">
+      <h2 id="asset-modal-title">
+        <i class="fa-solid fa-box" style="color: var(--color-primary);"></i>
+        Manage Assets & Wealth
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+
+    <!-- Existing Holdings CRUD Container -->
+    <div style="margin-bottom: 1.5rem;">
+      <div class="analytics-section-title">Current Holdings</div>
+      <div class="assets-management-list" id="assets-mgr-list">
+        <!-- Dynamic list of assets -->
+      </div>
+    </div>
+
+    <!-- New Asset Form -->
+    <form id="asset-form">
+      <div class="analytics-section-title">Add / Update Holding</div>
+
+      <!-- Asset Name -->
+      <div class="form-group">
+        <label for="a-name">Asset Name / Institution</label>
+        <input type="text" id="a-name" name="name" class="form-control"
+          placeholder="e.g. Cash Balance, HDFC Bank, Growth Stocks" required autocomplete="off">
+      </div>
+
+      <div class="form-row">
+        <!-- Asset Value -->
+        <div class="form-group">
+          <label for="a-value">Current Value (₹)</label>
+          <input type="number" step="0.01" min="0" id="a-value" name="value" class="form-control" placeholder="₹0.00"
+            required>
+        </div>
+
+        <!-- Asset Category -->
+        <div class="form-group">
+          <label for="a-category">Asset Category</label>
+          <select id="a-category" name="category" class="form-control" required>
+            <option value="cash">Cash Holdings</option>
+            <option value="bank">Bank Account</option>
+            <option value="stocks">Equities & Stocks</option>
+            <option value="crypto">Cryptocurrency</option>
+            <option value="real_estate">Real Estate</option>
+            <option value="mutual_funds">Mutual Funds & Bonds</option>
+            <option value="others">Others</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary"
+          onclick="document.getElementById('asset-dialog').close()">Done</button>
+        <button type="submit" class="btn btn-primary" id="btn-save-asset">Add Holding</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Setup Connection Modal -->
+  <dialog id="setup-dialog" closedby="any" aria-labelledby="setup-modal-title">
+    <div class="modal-header">
+      <h2 id="setup-modal-title">
+        <i class="fa-solid fa-server" style="color: var(--color-primary);"></i>
+        Database Sync Configuration
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="setup-form" method="dialog">
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Edit your Supabase configuration below. Leave the URL blank to use a local sandbox database instead.
+      </div>
+
+      <!-- URL -->
+      <div class="form-group">
+        <label for="setup-url">Supabase Project URL</label>
+        <input type="url" id="setup-url" class="form-control" placeholder="https://your-project-ref.supabase.co"
+          autocomplete="off">
+        <span class="form-helper">Found in Supabase dashboard under <b>Project Settings > API</b>.</span>
+      </div>
+
+      <!-- Key -->
+      <div class="form-group">
+        <label for="setup-key">Supabase Publishable Key</label>
+        <input type="text" id="setup-key" class="form-control" placeholder="sb_publishable_..." autocomplete="off">
+        <span class="form-helper">Requires Anon / Publishable key to run securely client-side.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary"
+          onclick="document.getElementById('setup-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Connect & Sync</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Global Toast Notifications Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Core Javascript code -->
+  <script src="finance.js"></script>
+</body>
+
+</html>
