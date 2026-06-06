@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    if (sessionStorage.getItem('tracker_auth_session') !== 'true') {
+      window.location.replace('../index.html');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="ARC Fit - A premium responsive health and vitals tracker with biometric allocation, daily target metrics, and real-time database synchronization.">
+  <title>ARC Fit Dashboard - Premium Health & Vitals Tracker</title>
+
+  <!-- Custom Vanilla CSS -->
+  <link rel="stylesheet" href="health.css">
+
+  <!-- FontAwesome for clean icons (strictly no emojis) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- External JS Assets (Chart.js & Supabase Client API) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="dark-theme">
+
+  <div class="app-container">
+
+    <!-- Global App Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">
+          <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        <div class="brand-name">
+          <h1>ARC Fit</h1>
+          <p>Real-time Biometrics & Vitals Dashboard</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Database Sync Status Indicator -->
+        <div class="sync-status" id="sync-indicator">
+          <span class="status-dot disconnected" id="status-dot"></span>
+          <span id="sync-text">Sandbox Mode</span>
+        </div>
+
+        <!-- Light / Dark Theme Toggler -->
+        <button class="btn btn-icon-only" id="theme-toggle" aria-label="Toggle Light/Dark Theme"
+          title="Toggle color theme">
+          <i class="fa-solid fa-sun" id="theme-icon-sun" style="display: none;"></i>
+          <i class="fa-solid fa-moon" id="theme-icon-moon"></i>
+        </button>
+
+        <!-- Database Sync Connection Settings -->
+        <button class="btn btn-icon-only" onclick="openSetupModal()" id="btn-settings" aria-label="Connection Settings"
+          title="Configure Database Connection">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+        <!-- Log Vital Reading -->
+        <button class="btn btn-secondary" onclick="openAddVitalModal()" id="btn-add-vital"
+          title="Log biometric vital reading">
+          <i class="fa-solid fa-vial"></i> Log Vital
+        </button>
+
+        <!-- Add/Edit Daily Log Trigger -->
+        <button class="btn btn-primary" onclick="openAddLogModal()" id="btn-add-log">
+          <i class="fa-solid fa-plus"></i> Log Daily Stats
+        </button>
+      </div>
+    </header>
+
+    <!-- Daily KPI Indicators Banner Grid -->
+    <section class="summary-grid" aria-label="Health Vitals KPI Indicators">
+
+      <!-- Daily Step Tracker -->
+      <div class="glass-card summary-card activity">
+        <div class="card-header-flex">
+          <span class="card-title">Daily Activity</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-shoe-prints"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-steps">0 steps</div>
+        <div class="card-meta" id="kpi-steps-meta">Goal: 0 steps</div>
+      </div>
+
+      <!-- Current Weight -->
+      <div class="glass-card summary-card weight">
+        <div class="card-header-flex">
+          <span class="card-title">Current Weight</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-weight-scale"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-weight">0.0 kg</div>
+        <div class="card-meta" id="kpi-weight-meta">Goal: 0.0 kg</div>
+      </div>
+
+      <!-- Sleep Duration -->
+      <div class="glass-card summary-card sleep">
+        <div class="card-header-flex">
+          <span class="card-title">Sleep Tracker</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-bed"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-sleep">0.0 hrs</div>
+        <div class="card-meta" id="kpi-sleep-meta">Goal: 0.0 hrs</div>
+      </div>
+
+      <!-- Hydration Level -->
+      <div class="glass-card summary-card hydration">
+        <div class="card-header-flex">
+          <span class="card-title">Hydration</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-droplet"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-hydration">0 ml</div>
+        <div class="card-meta" id="kpi-hydration-meta">Goal: 0 ml</div>
+      </div>
+
+      <!-- Net Calories Intake -->
+      <div class="glass-card summary-card calories">
+        <div class="card-header-flex">
+          <span class="card-title">Net Calories</span>
+          <span class="card-icon" aria-hidden="true">
+            <i class="fa-solid fa-fire-flame-curved"></i>
+          </span>
+        </div>
+        <div class="card-value" id="kpi-calories">0 kcal</div>
+        <div class="card-meta" id="kpi-calories-meta">In: 0 | Out: 0</div>
+      </div>
+    </section>
+
+    <!-- Biometric Vitals & Recent Readings Section -->
+    <div class="assets-grid-layout">
+      <!-- Vitals Distribution Chart -->
+      <section class="glass-card chart-card" aria-label="Biometrics Breakdown Chart">
+        <h3>
+          <i class="fa-solid fa-chart-pie"></i> Vitals Range Analysis
+        </h3>
+        <div class="chart-container">
+          <canvas id="vitalsChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Latest Vital Readings Portfolios -->
+      <section class="glass-card chart-card" aria-label="Recent Vital Readings">
+        <div class="budget-header">
+          <h3>
+            <i class="fa-solid fa-list-check"></i> Latest Biometrics
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="openAddVitalModal()"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-plus-minus"></i> Add Vital
+          </button>
+        </div>
+        <div class="assets-list-wrapper" id="vitals-list">
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div class="shimmer-loader" style="height: 48px; border-radius: 6px;"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Charts & Trends Section -->
+    <div class="charts-grid">
+      <!-- Calorie Trends (Last 6 Days) -->
+      <section class="glass-card chart-card" aria-label="Calorie Consumed vs Burned Trends">
+        <h3>
+          <i class="fa-solid fa-chart-column"></i> Calorie Balance Trend (6 Days)
+        </h3>
+        <div class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Steps Distribution or Water trend -->
+      <section class="glass-card chart-card" aria-label="Daily Steps Intake Trend">
+        <h3>
+          <i class="fa-solid fa-chart-line"></i> Daily Step Target Completion
+        </h3>
+        <div class="chart-container">
+          <canvas id="stepsChart"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Goals Checklist & Intelligence Panel Grid -->
+    <div class="details-row-grid">
+      <!-- Daily Goals Progress Section -->
+      <section class="glass-card budget-card" aria-label="Target Goals Overview">
+        <div class="budget-header">
+          <h3>
+            <i class="fa-solid fa-circle-dollar-to-slot"></i> Daily Health Goals
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="openGoalsModal()"
+            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-pen"></i> Set Goals
+          </button>
+        </div>
+        <div class="budget-list" id="goals-list">
+          <div class="shimmer-loader" style="height: 40px; border-radius: 6px; margin-bottom: 10px;"></div>
+          <div class="shimmer-loader" style="height: 40px; border-radius: 6px;"></div>
+        </div>
+      </section>
+
+      <!-- Health Intelligence Section -->
+      <section class="glass-card analytics-card" aria-label="Health Intelligence and Peak Metrics">
+        <h3>
+          <i class="fa-solid fa-brain"></i> Health Intelligence
+        </h3>
+        <div class="analytics-content">
+          <!-- Top metrics logs categories -->
+          <div>
+            <div class="analytics-section-title">Highest Activity Achievements</div>
+            <div class="top-spent-list" id="top-activity-list">
+              <div class="shimmer-loader" style="height: 20px; border-radius: 4px; margin-bottom: 8px; width: 85%;">
+              </div>
+              <div class="shimmer-loader" style="height: 20px; border-radius: 4px; width: 65%;"></div>
+            </div>
+          </div>
+
+          <!-- Highlight of peak metric performance of current month -->
+          <div>
+            <div class="analytics-section-title">Peak Calorie Burn Day (Current Month)</div>
+            <div id="peak-activity-container">
+              <div class="shimmer-loader" style="height: 60px; border-radius: 6px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Daily Health Logs Ledger Card -->
+    <section class="glass-card transactions-card" aria-label="Daily Health Logs Ledger">
+
+      <div class="table-header">
+        <h3>Daily Health Logs Ledger</h3>
+
+        <!-- Filters group panel -->
+        <div class="filters-group">
+          <!-- Search input -->
+          <div class="search-wrapper">
+            <span class="search-icon" aria-hidden="true">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="search" id="search-input" class="search-input" placeholder="Search mood/notes/date...">
+          </div>
+
+          <!-- Filter logs by Category/Metric presence -->
+          <select id="filter-category" class="select-filter" aria-label="Filter Metric Logs">
+            <option value="all">All Logs</option>
+            <option value="steps">Steps Logs</option>
+            <option value="water_intake">Water Logs</option>
+            <option value="sleep_duration">Sleep Logs</option>
+            <option value="weight">Weight Logs</option>
+            <option value="calories_consumed">Calorie Intake Logs</option>
+            <option value="calories_burned">Calorie Burn Logs</option>
+          </select>
+
+          <!-- Sort logs -->
+          <select id="filter-sort" class="select-filter" aria-label="Sort Health Logs">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="highest_steps">Highest Steps</option>
+            <option value="lowest_steps">Lowest Steps</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table wrapper container -->
+      <div class="table-wrapper">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 15%">Date</th>
+              <th scope="col" style="width: 35%">Logged Vitals & Metrics</th>
+              <th scope="col" style="width: 15%">Mood</th>
+              <th scope="col" style="width: 25%">Notes</th>
+              <th scope="col" style="width: 10%; text-align: right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="logs-body">
+            <tr>
+              <td colspan="5">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem;">
+                  <div class="shimmer-loader" style="height: 25px; border-radius: 4px; width: 100%;"></div>
+                  <div class="shimmer-loader" style="height: 25px; border-radius: 4px; width: 95%;"></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination wrapper footer -->
+      <div class="pagination-container">
+        <div id="page-info">Showing 0–0 of 0 logs</div>
+        <div class="pagination-controls">
+          <button class="btn btn-secondary pagination-btn" id="prev-btn" disabled>Prev</button>
+          <button class="btn btn-secondary pagination-btn" id="next-btn" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL DIALOG OVERLAYS                                     -->
+  <!-- ======================================================== -->
+
+  <!-- Onboarding Wizard Dialog (First run only) -->
+  <dialog id="onboarding-dialog" aria-labelledby="onboarding-modal-title" style="max-width: 600px;">
+    <div class="modal-header">
+      <h2 id="onboarding-modal-title">
+        <i class="fa-solid fa-route" style="color: var(--color-primary);"></i>
+        ARC Fit Onboarding Setup
+      </h2>
+    </div>
+
+    <div class="onboarding-wizard">
+      <!-- Steps Indicator -->
+      <div class="onboarding-steps-indicator">
+        <div class="onboarding-step-dot active" id="dot-step-1">1</div>
+        <div class="onboarding-step-dot" id="dot-step-2">2</div>
+        <div class="onboarding-step-dot" id="dot-step-3">3</div>
+      </div>
+
+      <!-- STEP 1: Supabase config -->
+      <div class="onboarding-step-content active" id="onboard-step-1-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-database"></i>
+          <h3>Database Sync Integration</h3>
+          <p>Sync your biometrics and health logs securely in real-time. You can also skip this to run locally in your browser sandbox.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="onboard-url">Supabase Project URL</label>
+          <input type="url" id="onboard-url" class="form-control" placeholder="https://your-project-ref.supabase.co"
+            autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="onboard-key">Supabase Publishable Key</label>
+          <input type="text" id="onboard-key" class="form-control" placeholder="sb_publishable_..." autocomplete="off">
+          <span class="form-helper">The client uses Row Level Security (RLS) policies for secure operations.</span>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="skipOnboardingDatabase()">Skip & Run Locally</button>
+          <button type="button" class="btn btn-primary" onclick="nextOnboardingStep(2)">Connect & Next <i
+              class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Initial Biometrics -->
+      <div class="onboarding-step-content" id="onboard-step-2-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-vial"></i>
+          <h3>Initial Biometric Readings</h3>
+          <p>Provide your current measurements to establish your starting health baseline.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-weight"><i class="fa-solid fa-weight-scale" style="color: #8b5cf6;"></i> Body Weight (kg)</label>
+            <input type="number" step="0.1" min="1" id="onboard-weight" class="form-control" placeholder="70.0" required>
+          </div>
+          <div class="form-group">
+            <label for="onboard-hr"><i class="fa-solid fa-heart-pulse" style="color: #f43f5e;"></i> Resting Heart Rate (bpm)</label>
+            <input type="number" step="1" min="10" id="onboard-hr" class="form-control" placeholder="72" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-sys"><i class="fa-solid fa-circle-arrow-up" style="color: #f59e0b;"></i> Systolic BP (mmHg)</label>
+            <input type="number" step="1" min="40" id="onboard-sys" class="form-control" placeholder="120" required>
+          </div>
+          <div class="form-group">
+            <label for="onboard-dia"><i class="fa-solid fa-circle-arrow-down" style="color: #3b82f6;"></i> Diastolic BP (mmHg)</label>
+            <input type="number" step="1" min="30" id="onboard-dia" class="form-control" placeholder="80" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-sugar"><i class="fa-solid fa-droplet" style="color: #20b8a6;"></i> Blood Sugar (mg/dL)</label>
+            <input type="number" step="1" min="10" id="onboard-sugar" class="form-control" placeholder="90" required>
+          </div>
+          <div class="form-group">
+            <label for="onboard-cholesterol"><i class="fa-solid fa-apple-whole" style="color: #94a3b8;"></i> Cholesterol (mg/dL)</label>
+            <input type="number" step="1" min="10" id="onboard-cholesterol" class="form-control" placeholder="180">
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="nextOnboardingStep(1)"><i
+              class="fa-solid fa-arrow-left"></i> Back</button>
+          <button type="button" class="btn btn-primary" onclick="nextOnboardingStep(3)">Next <i
+              class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Initial Health Goals -->
+      <div class="onboarding-step-content" id="onboard-step-3-content">
+        <div class="onboarding-header-info">
+          <i class="fa-solid fa-circle-dollar-to-slot"></i>
+          <h3>Daily Health Goals Setup</h3>
+          <p>Set targets for key daily variables. You can adjust these targets at any time.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-goal-steps"><i class="fa-solid fa-shoe-prints" style="color: #06b6d4;"></i> Steps Target</label>
+            <input type="number" step="100" min="0" id="onboard-goal-steps" class="form-control" placeholder="10000" required>
+          </div>
+          <div class="form-group">
+            <label for="onboard-goal-water"><i class="fa-solid fa-droplet" style="color: #3b82f6;"></i> Water Intake (ml)</label>
+            <input type="number" step="50" min="0" id="onboard-goal-water" class="form-control" placeholder="3000" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-goal-sleep"><i class="fa-solid fa-bed" style="color: #6366f1;"></i> Sleep Duration (hrs)</label>
+            <input type="number" step="0.5" min="0" id="onboard-goal-sleep" class="form-control" placeholder="8.0" required>
+          </div>
+          <div class="form-group">
+            <label for="onboard-goal-weight"><i class="fa-solid fa-weight-scale" style="color: #8b5cf6;"></i> Target Weight (kg)</label>
+            <input type="number" step="0.1" min="0" id="onboard-goal-weight" class="form-control" placeholder="70.0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="onboard-goal-consumed"><i class="fa-solid fa-bowl-food" style="color: #f97316;"></i> Target Calorie Intake (kcal)</label>
+            <input type="number" step="50" min="0" id="onboard-goal-consumed" class="form-control" placeholder="2000" required>
+          </div>
+          <div class="form-group">
+            <label for="onboard-goal-burned"><i class="fa-solid fa-fire-flame-curved" style="color: #ef4444;"></i> Target Calorie Burn (kcal)</label>
+            <input type="number" step="50" min="0" id="onboard-goal-burned" class="form-control" placeholder="500" required>
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="nextOnboardingStep(2)"><i
+              class="fa-solid fa-arrow-left"></i> Back</button>
+          <button type="button" class="btn btn-primary" onclick="submitOnboarding()">Finish Setup <i
+              class="fa-solid fa-check"></i></button>
+        </div>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- Add/Edit Daily Log Modal -->
+  <dialog id="log-dialog" closedby="any" aria-labelledby="log-modal-title">
+    <div class="modal-header">
+      <h2 id="log-modal-title">
+        <i class="fa-solid fa-calendar-day" style="color: var(--color-primary);"></i>
+        <span id="log-dialog-title-text">Log Daily Health Stats</span>
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="log-form" method="dialog">
+      <input type="hidden" id="log-id" name="id">
+
+      <div class="form-row">
+        <!-- Date -->
+        <div class="form-group">
+          <label for="log-date">Date</label>
+          <input type="date" id="log-date" name="date" class="form-control" required>
+        </div>
+        <!-- Weight -->
+        <div class="form-group">
+          <label for="log-weight">Weight (kg)</label>
+          <input type="number" step="0.1" min="0" id="log-weight" name="weight" class="form-control" placeholder="e.g. 70.2">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Steps -->
+        <div class="form-group">
+          <label for="log-steps">Steps Count</label>
+          <input type="number" step="1" min="0" id="log-steps" name="steps" class="form-control" placeholder="e.g. 8500">
+        </div>
+        <!-- Water Intake -->
+        <div class="form-group">
+          <label for="log-water">Water Intake (ml)</label>
+          <input type="number" step="10" min="0" id="log-water" name="water_intake" class="form-control" placeholder="e.g. 2500">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Sleep Duration -->
+        <div class="form-group">
+          <label for="log-sleep">Sleep Duration (hrs)</label>
+          <input type="number" step="0.1" min="0" max="24" id="log-sleep" name="sleep_duration" class="form-control" placeholder="e.g. 7.5">
+        </div>
+        <!-- Mood -->
+        <div class="form-group">
+          <label for="log-mood">Mood / State</label>
+          <select id="log-mood" name="mood" class="form-control">
+            <option value="">Select Mood</option>
+            <option value="energetic">Energetic</option>
+            <option value="happy">Happy</option>
+            <option value="normal">Normal</option>
+            <option value="tired">Tired</option>
+            <option value="stressed">Stressed</option>
+            <option value="sick">Sick</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Calories Consumed -->
+        <div class="form-group">
+          <label for="log-consumed">Calories Consumed (kcal)</label>
+          <input type="number" step="10" min="0" id="log-consumed" name="calories_consumed" class="form-control" placeholder="e.g. 2100">
+        </div>
+        <!-- Calories Burned -->
+        <div class="form-group">
+          <label for="log-burned">Calories Burned (kcal)</label>
+          <input type="number" step="10" min="0" id="log-burned" name="calories_burned" class="form-control" placeholder="e.g. 4500">
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label for="log-notes">Daily Notes</label>
+        <textarea id="log-notes" name="notes" class="form-control" rows="2" placeholder="e.g. Felt great today, went for a run in the morning." style="resize: vertical;"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('log-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Daily Stats</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Log Vital Reading Modal -->
+  <dialog id="vital-dialog" closedby="any" aria-labelledby="vital-modal-title">
+    <div class="modal-header">
+      <h2 id="vital-modal-title">
+        <i class="fa-solid fa-heart-pulse" style="color: var(--color-primary);"></i>
+        <span id="vital-dialog-title-text">Log Vital Reading</span>
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="vital-form" method="dialog">
+      <input type="hidden" id="vital-id" name="id">
+
+      <!-- Vital Name -->
+      <div class="form-group">
+        <label for="v-name">Reading Label / Name</label>
+        <input type="text" id="v-name" name="name" class="form-control" placeholder="e.g. Morning Blood Sugar, Resting Pulse" required autocomplete="off">
+      </div>
+
+      <div class="form-row">
+        <!-- Vital Category -->
+        <div class="form-group">
+          <label for="v-category">Vital Category</label>
+          <select id="v-category" name="category" class="form-control" required>
+            <option value="heart_rate">Heart Rate (bpm)</option>
+            <option value="blood_pressure_sys">Blood Pressure - Systolic (mmHg)</option>
+            <option value="blood_pressure_dia">Blood Pressure - Diastolic (mmHg)</option>
+            <option value="blood_sugar">Blood Sugar (mg/dL)</option>
+            <option value="cholesterol">Cholesterol (mg/dL)</option>
+            <option value="others">Others / General</option>
+          </select>
+        </div>
+        <!-- Value -->
+        <div class="form-group">
+          <label for="v-value">Reading Value</label>
+          <input type="number" step="0.1" min="0" id="v-value" name="value" class="form-control" placeholder="e.g. 72.0" required>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('vital-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btn-save-vital">Save Reading</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Target Goals Configuration Modal -->
+  <dialog id="goals-dialog" closedby="any" aria-labelledby="goals-dialog-title">
+    <div class="modal-header">
+      <h2 id="goals-dialog-title">
+        <i class="fa-solid fa-bullseye" style="color: var(--color-primary);"></i>
+        Configure Daily Target Goals
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="goals-form" method="dialog">
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Modify your daily/long-term targets. Leave values blank or 0 to configure no specific target.
+      </p>
+
+      <div id="goals-inputs-container">
+        <!-- Dynamically built in health.js -->
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('goals-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Targets</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Database Settings Modal -->
+  <dialog id="setup-dialog" closedby="any" aria-labelledby="setup-modal-title">
+    <div class="modal-header">
+      <h2 id="setup-modal-title">
+        <i class="fa-solid fa-server" style="color: var(--color-primary);"></i>
+        Database Sync Configuration
+      </h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <form id="setup-form" method="dialog">
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Edit your Supabase configuration below. Leave the URL blank to use a local sandbox database instead.
+      </div>
+
+      <div class="form-group">
+        <label for="setup-url">Supabase Project URL</label>
+        <input type="url" id="setup-url" class="form-control" placeholder="https://your-project-ref.supabase.co"
+          autocomplete="off">
+        <span class="form-helper">Found in Supabase dashboard under <b>Project Settings > API</b>.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="setup-key">Supabase Publishable Key</label>
+        <input type="text" id="setup-key" class="form-control" placeholder="sb_publishable_..." autocomplete="off">
+        <span class="form-helper">Requires Anon / Publishable key to run securely client-side.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('setup-dialog').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Connect & Sync</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Global Toast Alerts container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Core Dashboard Application Script -->
+  <script src="health.js"></script>
+</body>
+
+</html>
